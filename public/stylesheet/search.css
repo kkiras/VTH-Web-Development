@@ -189,6 +189,11 @@ button {
     align-items: center;
     gap: 0.25rem;
 }
+
+.badge-filter span {
+    cursor: pointer;
+}
+
 .results-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));

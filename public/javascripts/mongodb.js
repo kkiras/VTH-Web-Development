@@ -1,8 +1,8 @@
 const { MongoClient } = require("mongodb");
 
 const mongodbUrl = "mongodb://localhost:27017";
-const dbName = "final-practice"
-const collectionName = "shoes-test";
+const dbName = "data-nhom"
+const collectionName = "shoes";
 
 let dbCollection;
 let client;
@@ -39,15 +39,29 @@ async function insertDocument(newShoes) {
     return result;
 }
 
-async function findDocumentByName(imgName){
-    const documents = await dbCollection.findOne({name: imgName});
+async function findDocumentByName(query) {
+    const documents = await dbCollection.findOne({query});
+    return documents;
+
+}
+
+async function findDocumentByNameOrBrand(query) {
+    const documents = await dbCollection.find({
+      $or: [
+        { name: { $regex: query, $options: 'i' } },
+        { brand: { $regex: query, $options: 'i' } }
+      ]
+    }).toArray();
+  
     return documents;
 }
+  
 
 module.exports = {
     connectToMongoDB,
     closeMongoDBConnection,
     insertDocument,
-    findDocumentByName
+    findDocumentByName,
+    findDocumentByNameOrBrand
 };
 

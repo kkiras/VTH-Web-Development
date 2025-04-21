@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search Shoes</title>
-    <link rel="stylesheet" href="./search.css">
+    <link rel="stylesheet" href="stylesheet/search.css">
 </head>
 <body>
     <div class="container">
@@ -134,7 +134,7 @@
 
         function updateFilters() {
             selectedBrands = Array.from(document.querySelectorAll('#brand-filter input:checked')).map(input => input.parentElement.textContent.trim());
-            handleSearch();
+            // handleSearch();
         }
 
         function clearFilters() {
@@ -156,29 +156,67 @@
 
         function handleSearch() {
             hasSearched = true;
-            setTimeout(() => {
-                let results = [...sampleShoes];
+            console.log("Search query:", searchQuery);
 
-                if (searchQuery) {
-                    results = results.filter(shoe =>
-                        shoe.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                        shoe.brand.toLowerCase().includes(searchQuery.toLowerCase())
-                    );
-                }
+            const params = new URLSearchParams(window.location.search);
+            params.set('q', searchQuery);
+            window.history.pushState({}, '', `/searching?${params.toString()}`);
 
-                results = results.filter(shoe => shoe.price >= priceRange[0] && shoe.price <= priceRange[1]);
+            if (searchQuery) {
+                 fetch(`/searching?q=${encodeURIComponent(searchQuery)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(result => {
+                    filteredShoes = result;
+                    console.log("Filtered shoes:", filteredShoes);
+                    // displayResults();
+                })
+                .catch(error => {
+                    console.error("Error fetching shoes:", error);
+                    filteredShoes = [];
+                    // displayResults();
+                });
+            }
+            // const query = new URLSearchParams({
+            //     name: 'iphone',
+            //     priceMin: 1000,
+            //     priceMax: 2000
+            //     });
 
-                if (selectedBrands.length > 0) {
-                    results = results.filter(shoe => selectedBrands.includes(shoe.brand));
-                }
+            //     ['Apple', 'Samsung'].forEach(b => query.append('brand', b));
+            //     ['6.1', '6.7'].forEach(s => query.append('size', s));
 
-                if (selectedSizes.length > 0) {
-                    results = results.filter(shoe => shoe.size.some(size => selectedSizes.includes(size)));
-                }
+            //     fetch(`/search?${query.toString()}`)
+            //     .then(res => res.json())
+            //     .then(data => console.log(data));
 
-                filteredShoes = results;
-                displayResults();
-            }, 800);
+            // setTimeout(() => {
+            //     let results = [...sampleShoes];
+
+            //     if (searchQuery) {
+            //         results = results.filter(shoe =>
+            //             shoe.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            //             shoe.brand.toLowerCase().includes(searchQuery.toLowerCase())
+            //         );
+            //     }
+
+            //     results = results.filter(shoe => shoe.price >= priceRange[0] && shoe.price <= priceRange[1]);
+
+            //     if (selectedBrands.length > 0) {
+            //         results = results.filter(shoe => selectedBrands.includes(shoe.brand));
+            //     }
+
+            //     if (selectedSizes.length > 0) {
+            //         results = results.filter(shoe => shoe.size.some(size => selectedSizes.includes(size)));
+            //     }
+
+            //     filteredShoes = results;
+            //     displayResults();
+            // }, 800);
         }
 
         function displayResults() {
@@ -209,17 +247,17 @@
             `;
 
             if (filteredShoes.length === 0) {
-                resultsGrid.innerHTML = `
-                    <div class="card" style="padding: 3rem; text-align: center;">
-                        <div style="background: #f3f4f6; width: 4rem; height: 4rem; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                        </div>
-                        <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem;">No shoes found</h3>
-                        <p style="color: #666; margin-bottom: 1.5rem;">Try adjusting your search or filter criteria</p>
-                        <button class="btn-search" onclick="clearFilters()">Clear All Filters</button>
-                    </div>
-                `;
-                return;
+                // resultsGrid.innerHTML = `
+                //     <div class="card" style="padding: 3rem; text-align: center;">
+                //         <div style="background: #f3f4f6; width: 4rem; height: 4rem; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                //             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                //         </div>
+                //         <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem;">No shoes found</h3>
+                //         <p style="color: #666; margin-bottom: 1.5rem;">Try adjusting your search or filter criteria</p>
+                //         <button class="btn-search" onclick="clearFilters()">Clear All Filters</button>
+                //     </div>
+                // `;
+                // return;
             }
 
             filteredShoes.forEach(shoe => { //Danh sách đã được lọc và phân bổ sau khi server trả kq về client
@@ -258,12 +296,12 @@
         function toggleBrand(brand) {
             selectedBrands = selectedBrands.filter(b => b !== brand);
             document.querySelector(`#brand-filter input[value="${brand}"]`).checked = false;
-            handleSearch();
+            // handleSearch();
         }
 
         function clearPrice() {
             priceRange = [0, 7000000];
-            handleSearch();
+            // handleSearch();
         }
 
         // Initial render

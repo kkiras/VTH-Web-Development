@@ -39,6 +39,10 @@ app.get('/create', (req, res) => {
   res.sendFile(path.join(__dirname, './public/pages/create.html'));
 });
 
+app.get('/search', (req, res) => {
+  res.sendFile(path.join(__dirname, './public/pages/search.html'));
+});
+
 app.get('/reload-shoes-added', (req, res) => {
   newShoesAdded = [];
   res.status(200).json({ message: `Length of list is [${newShoesAdded.length}].` });
@@ -78,6 +82,15 @@ app.get('/images/:imageName', async (req, res) => {
   await loadShoes(imageName, res);
   
 });
+
+app.get('/searching', async (req, res) => {
+  const searchQuery = req.query.q;
+  console.log('Search queryyy:', searchQuery);
+  const result = await mongodbModule.findDocumentByNameOrBrand(searchQuery);
+  console.log('Search result:', result);
+  res.status(200).json(result);
+});
+
 
 async function loadShoes(imageName, res) {
     try {
