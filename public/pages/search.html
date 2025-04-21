@@ -21,8 +21,8 @@
                         <span id="price-chevron">▼</span>
                     </div>
                     <div class="price-filter">
-                        <input type="range" id="minRange" min="2900" max="7000" value="2900" step="100">
-                        <input type="range" id="maxRange" min="2900" max="7000" value="7000" step="100">
+                        <input type="range" id="minRange" min="2900000" max="7000000" value="2900000" step="100000">
+                        <input type="range" id="maxRange" min="2900000" max="7000000" value="7000000" step="100000">
                         <div class="slider-track" id="sliderTrack" style="background: linear-gradient(to right, rgb(221, 221, 221) 0%, rgb(0, 123, 255) 0%, rgb(0, 123, 255) 100%, rgb(221, 221, 221) 100%);"></div>
                     </div>
                     <div class="price-display">
@@ -138,31 +138,32 @@
         }
 
         function clearFilters() {
-            searchQuery = "";
-            priceRange = [0, 7000000];
-            selectedBrands = [];
-            selectedSizes = [];
-            filteredShoes = [];
             hasSearched = false;
+            searchQuery = "";
+            // priceRange = [0, 7000000];
+            // selectedBrands = [];
+            // selectedSizes = [];
+            // filteredShoes = [];
+            // hasSearched = false;
 
             document.querySelector('.search-bar input').value = '';
-            document.querySelectorAll('#brand-filter input').forEach(input => input.checked = false);
-            document.querySelectorAll('.size-button').forEach(button => {
-                button.classList.remove('selected');
-            });
+            // document.querySelectorAll('#brand-filter input').forEach(input => input.checked = false);
+            // document.querySelectorAll('.size-button').forEach(button => {
+            //     button.classList.remove('selected');
+            // });
 
-            displayResults();
+            // displayResults();
+            window.history.pushState({}, '', '/search');
         }
 
         function handleSearch() {
             hasSearched = true;
             console.log("Search query:", searchQuery);
 
-            const params = new URLSearchParams(window.location.search);
-            params.set('q', searchQuery);
-            window.history.pushState({}, '', `/searching?${params.toString()}`);
-
-            if (searchQuery) {
+            if (searchQuery != "") {
+                const params = new URLSearchParams(window.location.search);
+                params.set('q', searchQuery);
+                window.history.pushState({}, '', `/searching?${params.toString()}`);
                  fetch(`/searching?q=${encodeURIComponent(searchQuery)}`)
                 .then(response => {
                     if (!response.ok) {
@@ -181,6 +182,46 @@
                     // displayResults();
                 });
             }
+            if(selectedBrands.length > 0 || selectedSizes.length > 0){
+                const minPrice = document.getElementById("minRange").value;
+                const maxPrice = document.getElementById("maxRange").value;
+
+                const query = new URLSearchParams({
+                    priceMin: minPrice,
+                    priceMax: maxPrice
+                });
+                
+                // params.set('priceMin', minPrice);
+                // params.set('priceMax', maxPrice);
+
+                
+                
+                selectedBrands.forEach(brand => query.append('brand', brand));
+                selectedSizes.forEach(size => query.append('size', size));
+                console.log("Query:", query.toString());
+                window.history.pushState({}, '', `/searching?${query.toString()}`);
+                // selectedBrands.forEach(brand => params.append('brand', brand));
+                // selectedSizes.forEach(size => params.append('size', size));
+
+                fetch(`/searching?${query.toString()}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                }).then(result => {
+                    filteredShoes = result;
+                    console.log("Filtered shoes:", filteredShoes);
+                    // displayResults();
+                })
+                .catch(error => {
+                    console.error("Error fetching shoes:", error);
+                    filteredShoes = [];
+                    // displayResults();
+                });
+            }
+            
+
             // const query = new URLSearchParams({
             //     name: 'iphone',
             //     priceMin: 1000,
@@ -338,8 +379,8 @@
             }
 
             // Update the displayed prices
-            minPrice.textContent = minVal;
-            maxPrice.textContent = maxValCurr;
+            minPrice.textContent = new Intl.NumberFormat('vi-VN').format(minVal) + ' VNĐ';
+            maxPrice.textContent = new Intl.NumberFormat('vi-VN').format(maxValCurr) + ' VNĐ';
 
             // Calculate the percentage positions for the slider track
             const percentMin = ((minVal - +minRange.min) / (maxVal - +minRange.min)) * 100;

@@ -84,11 +84,30 @@ app.get('/images/:imageName', async (req, res) => {
 });
 
 app.get('/searching', async (req, res) => {
-  const searchQuery = req.query.q;
-  console.log('Search queryyy:', searchQuery);
-  const result = await mongodbModule.findDocumentByNameOrBrand(searchQuery);
-  console.log('Search result:', result);
-  res.status(200).json(result);
+  const nameOrBrand = req.query.q;
+  const { priceMin, priceMax, brand, size } = req.query;
+  const searchQuery = {
+    nameOrBrand: nameOrBrand != "" ? nameOrBrand : null,
+    priceMin: priceMin || null,
+    priceMax: priceMax || null,
+    brand: brand || null,
+    size: size || null
+  };
+  console.log('Search query:', searchQuery);
+  // console.log('Search queryyy:', nameOrBrand);
+  if(searchQuery.brand && searchQuery.size == null) {
+    const result = await mongodbModule.findDocumentByNameOrBrand(searchQuery);
+    console.log('Search result 1:', result);
+    res.status(200).json(result);
+  }
+ 
+  if(searchQuery.brand || searchQuery.size !== null) {
+    const result = await mongodbModule.findDocument(searchQuery);
+    console.log('Search result 2:', result);
+    res.status(200).json(result);
+  }
+ 
+  
 });
 
 

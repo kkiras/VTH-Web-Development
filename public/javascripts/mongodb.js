@@ -48,11 +48,26 @@ async function findDocumentByName(query) {
 async function findDocumentByNameOrBrand(query) {
     const documents = await dbCollection.find({
       $or: [
-        { name: { $regex: query, $options: 'i' } },
-        { brand: { $regex: query, $options: 'i' } }
+        { name: { $regex: query.nameOrBrand, $options: 'i' } },
+        { brand: { $regex: query.nameOrBrand, $options: 'i' } }
       ]
     }).toArray();
   
+    return documents;
+}
+
+async function findDocument(query) {
+    const documents = await dbCollection.find({
+        $and: [
+            {price: {
+                $gte: parseFloat(query.priceMin) || 0,
+                $lte: parseFloat(query.priceMax) || Infinity
+            } },
+            { size: {
+                $in: query.size ? query.size : []
+            } }
+        ]
+    }).toArray();
     return documents;
 }
   
@@ -62,6 +77,7 @@ module.exports = {
     closeMongoDBConnection,
     insertDocument,
     findDocumentByName,
-    findDocumentByNameOrBrand
+    findDocumentByNameOrBrand,
+    findDocument
 };
 
