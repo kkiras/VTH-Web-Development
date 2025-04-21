@@ -2,14 +2,14 @@ const { MongoClient, ObjectId } = require("mongodb");
 
 const mongodbUrl = "mongodb://localhost:27017";
 const dbName = "data-nhom";
-const collectionName = "shoes";
+const collectionName = "shoes-2";
 
 let dbCollection;
 let client;
 
 async function connectToMongoDB() {
   try {
-    client = await MongoClient.connect(mongodbUrl, { useNewUrlParser: true, useUnifiedTopology: true });
+    client = await MongoClient.connect(mongodbUrl);
     dbCollection = client.db(dbName).collection(collectionName);
   } catch (err) {
     console.error("Error connecting to MongoDB:", err);
@@ -43,9 +43,10 @@ async function insertDocument(newShoes) {
   }
 }
 
-async function findDocumentByName(name) {
+async function findDocumentsByName(name) {
   try {
-    return await dbCollection.findOne({ name });
+    console.log("Finding documents by name:", name);
+    return await dbCollection.find({ name: { $regex: name, $options: 'i' } }).toArray();
   } catch (err) {
     console.error("Error finding document by name:", err);
     throw err;
@@ -112,17 +113,49 @@ async function updateShoeById(id, updatedData) {
 }
 
 async function findDocument(query) {
-    const documents = await dbCollection.find({
-        $and: [
-            {price: {
-                $gte: parseFloat(query.priceMin) || 0,
-                $lte: parseFloat(query.priceMax) || Infinity
-            } },
-            { size: {
-                $in: query.size ? query.size : []
-            } }
-        ]
-    }).toArray();
+    const filters = [];
+
+    const sizes = Array.isArray(query.size)
+    ? query.size
+    : query.size
+    ? [query.size]
+    : [];
+
+    filters.push({
+        price: {
+            $gte: parseFloat(query.priceMin) || 0,
+            $lte: parseFloat(query.priceMax) || Infinity
+        }
+    });
+
+    if (sizes > 0) {
+        filters.push({
+            size: sizes.length === 1 ? sizes[0] : { $in: sizes }
+        });
+        
+    }
+
+    if (query.brand && query.brand.trim() !== "") {
+        filters.push({
+            brand: {
+                $regex: query.brand,
+                $options: 'i'
+            }
+        });
+    }
+
+    if (query.nameOrBrand && query.nameOrBrand.trim() !== "") {
+        filters.push({
+            name: { 
+                $regex: query.nameOrBrand, 
+                $options: 'i' 
+            } 
+        });
+    }
+
+    const mongoQuery = filters.length > 0 ? { $and: filters } : {};
+
+    const documents = await dbCollection.find(mongoQuery).toArray();
     return documents;
 }
   
@@ -132,9 +165,10 @@ module.exports = {
   connectToMongoDB,
   closeMongoDBConnection,
   insertDocument,
-  findDocumentByName,
+  findDocumentsByName,
   findDocumentById,
   findDocumentByNameOrBrand,
   findDocumentsByIdOrName,
-  updateShoeById
+  updateShoeById,
+    findDocument,
 };

@@ -47,6 +47,10 @@ app.get('/update', (req, res) => {
   res.sendFile(path.join(__dirname, './public/pages/update.html'));
 });
 
+app.get('/delete', (req, res) => {
+  res.sendFile(path.join(__dirname, './public/pages/delete.html'));
+});
+
 // --- Data APIs ---
 
 // Reset in-memory list
@@ -112,19 +116,19 @@ app.get('/searching', async (req, res) => {
   };
   console.log('Search query:', searchQuery);
   // console.log('Search queryyy:', nameOrBrand);
-  if(searchQuery.brand && searchQuery.size == null) {
-    const result = await mongodbModule.findDocumentByNameOrBrand(searchQuery);
-    console.log('Search result 1:', result);
-    res.status(200).json(result);
+  if (searchQuery.nameOrBrand || searchQuery.brand || searchQuery.size) {
+    result = await mongodbModule.findDocument(searchQuery);
+  } else {
+    result = await mongodbModule.findDocument(); // or return empty result []
   }
+  res.status(200).json(result);
  
-  if(searchQuery.brand || searchQuery.size !== null) {
-    const result = await mongodbModule.findDocument(searchQuery);
-    console.log('Search result 2:', result);
-    res.status(200).json(result);
-  }
- 
-  
+});
+
+app.get('/get-all-shoes', async (req, res) => {
+  const name = req.query.name;
+  const shoes = await mongodbModule.findDocumentsByName(name);
+  res.status(200).json(shoes);
 });
 
 // Get shoes by id or name
@@ -138,6 +142,7 @@ app.get('/api/shoes/all', async (req, res) => {
     res.status(500).json({ message: 'Search failed' });
   }
 });
+
 
 // Update shoe by ID
 app.put('/api/shoes/:id', upload.single('image'), async (req, res) => {
@@ -167,26 +172,26 @@ app.put('/api/shoes/:id', upload.single('image'), async (req, res) => {
 
 // --- Helper Functions ---
 
-async function loadShoes(imageName, res) {
-  try {
-    const imageDocument = await mongodbModule.findDocumentByName(imageName);
-    if (imageDocument && imageDocument.imageData) {
-      const imageData = imageDocument.imageData.buffer;
-      const mimeType = imageDocument.mimeType;
+// async function loadShoes(imageName, res) {
+//   try {
+//     const imageDocument = await mongodbModule.findDocumentByName(imageName);
+//     if (imageDocument && imageDocument.imageData) {
+//       const imageData = imageDocument.imageData.buffer;
+//       const mimeType = imageDocument.mimeType;
 
-      res.writeHead(200, {
-        'Content-Type': mimeType,
-        'Content-Length': imageData.length
-      });
-      res.end(Buffer.from(imageData, 'binary'));
-    } else {
-      res.status(404).send('Image not found');
-    }
-  } catch (err) {
-    console.error('Failed to load image:', err);
-    res.status(500).send('Error fetching image');
-  }
-}
+//       res.writeHead(200, {
+//         'Content-Type': mimeType,
+//         'Content-Length': imageData.length
+//       });
+//       res.end(Buffer.from(imageData, 'binary'));
+//     } else {
+//       res.status(404).send('Image not found');
+//     }
+//   } catch (err) {
+//     console.error('Failed to load image:', err);
+//     res.status(500).send('Error fetching image');
+//   }
+// }
 
 async function addNewShoes(shoeList, res) {
   try {

@@ -158,13 +158,29 @@
 
         function handleSearch() {
             hasSearched = true;
-            console.log("Search query:", searchQuery);
 
-            if (searchQuery != "") {
-                const params = new URLSearchParams(window.location.search);
-                params.set('q', searchQuery);
-                window.history.pushState({}, '', `/searching?${params.toString()}`);
-                 fetch(`/searching?q=${encodeURIComponent(searchQuery)}`)
+            const minPrice = document.getElementById("minRange").value;
+            const maxPrice = document.getElementById("maxRange").value;
+
+            const query = new URLSearchParams();
+
+            if (searchQuery && searchQuery.trim() !== "") {
+                query.set('q', searchQuery.trim());
+            }
+
+            if (minPrice) query.set('priceMin', minPrice);
+            if (maxPrice) query.set('priceMax', maxPrice);
+
+            selectedBrands.forEach(brand => query.append('brand', brand));
+            selectedSizes.forEach(size => query.append('size', size));
+
+            console.log("Combined query:", query.toString());
+
+            // Update browser URL
+            window.history.pushState({}, '', `/searching?${query.toString()}`);
+
+            // Fetch data with combined query
+            fetch(`/searching?${query.toString()}`)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
@@ -181,83 +197,6 @@
                     filteredShoes = [];
                     // displayResults();
                 });
-            }
-            if(selectedBrands.length > 0 || selectedSizes.length > 0){
-                const minPrice = document.getElementById("minRange").value;
-                const maxPrice = document.getElementById("maxRange").value;
-
-                const query = new URLSearchParams({
-                    priceMin: minPrice,
-                    priceMax: maxPrice
-                });
-                
-                // params.set('priceMin', minPrice);
-                // params.set('priceMax', maxPrice);
-
-                
-                
-                selectedBrands.forEach(brand => query.append('brand', brand));
-                selectedSizes.forEach(size => query.append('size', size));
-                console.log("Query:", query.toString());
-                window.history.pushState({}, '', `/searching?${query.toString()}`);
-                // selectedBrands.forEach(brand => params.append('brand', brand));
-                // selectedSizes.forEach(size => params.append('size', size));
-
-                fetch(`/searching?${query.toString()}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
-                }).then(result => {
-                    filteredShoes = result;
-                    console.log("Filtered shoes:", filteredShoes);
-                    // displayResults();
-                })
-                .catch(error => {
-                    console.error("Error fetching shoes:", error);
-                    filteredShoes = [];
-                    // displayResults();
-                });
-            }
-            
-
-            // const query = new URLSearchParams({
-            //     name: 'iphone',
-            //     priceMin: 1000,
-            //     priceMax: 2000
-            //     });
-
-            //     ['Apple', 'Samsung'].forEach(b => query.append('brand', b));
-            //     ['6.1', '6.7'].forEach(s => query.append('size', s));
-
-            //     fetch(`/search?${query.toString()}`)
-            //     .then(res => res.json())
-            //     .then(data => console.log(data));
-
-            // setTimeout(() => {
-            //     let results = [...sampleShoes];
-
-            //     if (searchQuery) {
-            //         results = results.filter(shoe =>
-            //             shoe.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            //             shoe.brand.toLowerCase().includes(searchQuery.toLowerCase())
-            //         );
-            //     }
-
-            //     results = results.filter(shoe => shoe.price >= priceRange[0] && shoe.price <= priceRange[1]);
-
-            //     if (selectedBrands.length > 0) {
-            //         results = results.filter(shoe => selectedBrands.includes(shoe.brand));
-            //     }
-
-            //     if (selectedSizes.length > 0) {
-            //         results = results.filter(shoe => shoe.size.some(size => selectedSizes.includes(size)));
-            //     }
-
-            //     filteredShoes = results;
-            //     displayResults();
-            // }, 800);
         }
 
         function displayResults() {
