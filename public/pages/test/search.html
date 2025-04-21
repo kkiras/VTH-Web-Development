@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Shoes</title>
+    <link rel="stylesheet" href="./search.css">
+</head>
+<body>
+    <div class="container">
+        <div class="flex-row">
+            <div class="sidebar">
+                <div class="filter-header">
+                    <h2>Filters</h2>
+                    <button onclick="clearFilters()" style="background: none; color: #555;">Clear All</button>
+                </div>
+
+                <div class="filter-section">
+                    <div class="filter-title" onclick="toggleFilter('price')">
+                        <h3>Price Range</h3>
+                        <span id="price-chevron">▼</span>
+                    </div>
+                    <div class="price-filter">
+                        <input type="range" id="minRange" min="2900" max="7000" value="2900" step="100">
+                        <input type="range" id="maxRange" min="2900" max="7000" value="7000" step="100">
+                        <div class="slider-track" id="sliderTrack" style="background: linear-gradient(to right, rgb(221, 221, 221) 0%, rgb(0, 123, 255) 0%, rgb(0, 123, 255) 100%, rgb(221, 221, 221) 100%);"></div>
+                    </div>
+                    <div class="price-display">
+                        <span id="minPrice">2900</span>
+                        <span id="maxPrice">7000</span>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <div class="filter-title" onclick="toggleFilter('brand')">
+                        <h3>Brand</h3>
+                        <span id="brand-chevron">▼</span>
+                    </div>
+                    <div id="brand-filter" class="checkbox-group">
+                        <label><input type="checkbox" onchange="updateFilters()"> Puma</label>
+                        <label><input type="checkbox" onchange="updateFilters()"> Nike</label>
+                        <label><input type="checkbox" onchange="updateFilters()"> Adidas</label>
+                        <label><input type="checkbox" onchange="updateFilters()"> New Balance</label>
+                        <label><input type="checkbox" onchange="updateFilters()"> Asics</label>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <div class="filter-title" onclick="toggleFilter('size')">
+                        <h3>Size</h3>
+                        <span id="size-chevron">▼</span>
+                    </div>
+                    <div id="size-filter" class="size-buttons">
+                        <button class="size-button" data-size="36" onclick="toggleSize(this, '36')">36</button>
+                        <button class="size-button" data-size="37" onclick="toggleSize(this, '37')">37</button>
+                        <button class="size-button" onclick="toggleSize(this, '38')">38</button>
+                        <button class="size-button" onclick="toggleSize(this, '39')">39</button>
+                        <button class="size-button" onclick="toggleSize(this, '40')">40</button>
+                        <button class="size-button" onclick="toggleSize(this, '41')">41</button>
+                        <button class="size-button" onclick="toggleSize(this, '42')">42</button>
+                        <button class="size-button" onclick="toggleSize(this, '43')">43</button>
+                        <button class="size-button" onclick="toggleSize(this, '44')">44</button>
+                    </div>
+                </div>
+
+                <button class="btn-search" onclick="handleSearch()">
+                    Search
+                </button>
+            </div>
+
+            <div class="main-content">
+                <div class="search-bar">
+                    <div id="search-bar-container">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+                        <input type="text" placeholder="Search by name, description, or brand..." oninput="updateSearchQuery(this.value)">
+                    </div>
+                    <button class="btn-search" onclick="handleSearch()">
+                        Search
+                    </button>
+                </div>
+
+                <div class="results-info" id="results-info"></div>
+                <div class="shoes-list" id="shoes-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const sampleShoes = [
+            { id: "040", name: "Puma Deviate Nitro Elite 2", price: 6800000, displayPrice: "6.800.000VNĐ", stock: 18, brand: "Puma", size: ["36", "37", "38", "39", "40", "41", "42"] },
+            { id: "041", name: "Nike Air Zoom Pegasus 39", price: 3200000, displayPrice: "3.200.000VNĐ", stock: 24, brand: "Nike", size: ["38", "39", "40", "41", "42", "43"] },
+            { id: "042", name: "Adidas Ultraboost 22", price: 4500000, displayPrice: "4.500.000VNĐ", stock: 12, brand: "Adidas", size: ["39", "40", "41", "42", "43", "44"] },
+            { id: "043", name: "New Balance Fresh Foam X 1080v12", price: 4200000, displayPrice: "4.200.000VNĐ", stock: 8, brand: "New Balance", size: ["40", "41", "42", "43"] },
+            { id: "044", name: "Asics Gel-Nimbus 24", price: 3900000, displayPrice: "3.900.000VNĐ", stock: 15, brand: "Asics", size: ["39", "40", "41", "42", "43"] },
+            { id: "045", name: "Puma Velocity Nitro 2", price: 2900000, displayPrice: "2.900.000VNĐ", stock: 0, brand: "Puma", size: ["38", "39", "40", "41", "42"] },
+            { id: "046", name: "Nike ZoomX Vaporfly Next% 2", price: 6500000, displayPrice: "6.500.000VNĐ", stock: 5, brand: "Nike", size: ["40", "41", "42", "43", "44"] },
+            { id: "047", name: "Adidas Adizero Adios Pro 2", price: 5800000, displayPrice: "5.800.000VNĐ", stock: 3, brand: "Adidas", size: ["41", "42", "43", "44"] }
+        ];
+
+        let searchQuery = "";
+        let priceRange = [0, 7000000];
+        let selectedBrands = [];
+        let selectedSizes = [];
+        let filteredShoes = [];
+        let hasSearched = false;
+
+        function formatPrice(price) {
+            return price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 });
+        }
+
+        function updateSearchQuery(value) {
+            searchQuery = value;
+        }
+
+        function toggleFilter(section) {
+            const filter = document.getElementById(`${section}-filter`);
+            const chevron = document.getElementById(`${section}-chevron`);
+            filter.style.display = filter.style.display === 'none' ? 'block' : 'none';
+            chevron.textContent = filter.style.display === 'none' ? '▼' : '▲';
+        }
+
+        function toggleSize(button, size) {
+            console.log("Selected size:", size);
+            console.log("Button:", button);
+            if (selectedSizes.includes(size)) {
+                selectedSizes = selectedSizes.filter(s => s !== size);
+                button.classList.remove('selected');
+            } else {
+                selectedSizes.push(size);
+                button.classList.add('selected');
+            }
+            updateFilters();
+        }
+
+        function updateFilters() {
+            selectedBrands = Array.from(document.querySelectorAll('#brand-filter input:checked')).map(input => input.parentElement.textContent.trim());
+            handleSearch();
+        }
+
+        function clearFilters() {
+            searchQuery = "";
+            priceRange = [0, 7000000];
+            selectedBrands = [];
+            selectedSizes = [];
+            filteredShoes = [];
+            hasSearched = false;
+
+            document.querySelector('.search-bar input').value = '';
+            document.querySelectorAll('#brand-filter input').forEach(input => input.checked = false);
+            document.querySelectorAll('.size-button').forEach(button => {
+                button.classList.remove('selected');
+            });
+
+            displayResults();
+        }
+
+        function handleSearch() {
+            hasSearched = true;
+            setTimeout(() => {
+                let results = [...sampleShoes];
+
+                if (searchQuery) {
+                    results = results.filter(shoe =>
+                        shoe.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                        shoe.brand.toLowerCase().includes(searchQuery.toLowerCase())
+                    );
+                }
+
+                results = results.filter(shoe => shoe.price >= priceRange[0] && shoe.price <= priceRange[1]);
+
+                if (selectedBrands.length > 0) {
+                    results = results.filter(shoe => selectedBrands.includes(shoe.brand));
+                }
+
+                if (selectedSizes.length > 0) {
+                    results = results.filter(shoe => shoe.size.some(size => selectedSizes.includes(size)));
+                }
+
+                filteredShoes = results;
+                displayResults();
+            }, 800);
+        }
+
+        function displayResults() {
+            const resultsInfo = document.getElementById('results-info');
+            const shoesList = document.getElementById('shoes-list');
+
+            resultsInfo.innerHTML = '';
+            shoesList.innerHTML = '';
+
+            if (!hasSearched) {
+                shoesList.innerHTML = `
+                    <div class="card" style="padding: 3rem; text-align: center;">
+                        <div style="background: #f3f4f6; width: 4rem; height: 4rem; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        </div>
+                        <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem;">Set your search criteria</h3>
+                        <p style="color: #666;">Use the filters on the left and click the Search button to find shoes</p>
+                    </div>
+                `;
+                return;
+            }
+
+            resultsInfo.innerHTML = `
+                <span>${filteredShoes.length} results found</span>
+                ${selectedBrands.map(brand => `<span class="badge-filter">${brand} <span onclick="toggleBrand('${brand}')">✖</span></span>`).join('')}
+                ${selectedSizes.map(size => `<span class="badge-filter">Size ${size} <span onclick="toggleSize(document.querySelector(\`.size-button[data-size='${size}']\`), '${size}')">✖</span></span>`).join('')}
+                ${priceRange[0] > 0 || priceRange[1] < 7000000 ? `<span class="badge-filter">${formatPrice(priceRange[0])} - ${formatPrice(priceRange[1])} <span onclick="clearPrice()">✖</span></span>` : ''}
+            `;
+
+            if (filteredShoes.length === 0) {
+                resultsGrid.innerHTML = `
+                    <div class="card" style="padding: 3rem; text-align: center;">
+                        <div style="background: #f3f4f6; width: 4rem; height: 4rem; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        </div>
+                        <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem;">No shoes found</h3>
+                        <p style="color: #666; margin-bottom: 1.5rem;">Try adjusting your search or filter criteria</p>
+                        <button class="btn-search" onclick="clearFilters()">Clear All Filters</button>
+                    </div>
+                `;
+                return;
+            }
+
+            filteredShoes.forEach(shoe => { //Danh sách đã được lọc và phân bổ sau khi server trả kq về client
+                const stockStatus = getStockStatus(shoe.stock);
+                shoesList.innerHTML += `
+                    <div class="card">
+                        <div class="card-image">
+                            ${shoe.image ? `<img src="http://localhost:3000/${shoe.image}" >` : `<div class="no-image">No Image</div>`}
+                            <span class="badge ${stockStatus.color}">${stockStatus.label}</span>
+                        </div>
+                        <div class="card-content">
+                            <div class="flex justify-between mb-2">
+                                <div>
+                                    <h3>${shoe.name}</h3>
+                                    <p class="text-gray">ID: ${shoe.id}</p>
+                                </div>
+                                <p class="price">${shoe.price}</p>
+                            </div>
+                            <div class="sizes">
+                                ${shoe.size.slice(0, 5).map(size => `<span>${size}</span>`).join('')}
+                                ${shoe.size.length > 5 ? `<span>+${shoe.size.length - 5}</span>` : ''}
+                            </div>
+                            <div class="card-actions">
+                                <div class="stock-info">Stock: ${shoe.stock} units</div>
+                                <div class="dropdown">
+                                    <button class="view-detail">View detail</button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function toggleBrand(brand) {
+            selectedBrands = selectedBrands.filter(b => b !== brand);
+            document.querySelector(`#brand-filter input[value="${brand}"]`).checked = false;
+            handleSearch();
+        }
+
+        function clearPrice() {
+            priceRange = [0, 7000000];
+            handleSearch();
+        }
+
+        // Initial render
+        displayResults();
+
+        function getStockStatus(stock) {
+            if (stock === 0) return { label: "Out of Stock", color: "destructive" };
+            if (stock <= 5) return { label: "Low Stock", color: "warning" };
+            return { label: "In Stock", color: "success" };
+        }
+
+        const minRange = document.getElementById("minRange");
+        const maxRange = document.getElementById("maxRange");
+        const minPrice = document.getElementById("minPrice");
+        const maxPrice = document.getElementById("maxPrice");
+        const sliderTrack = document.getElementById("sliderTrack");
+
+        const minGap = 50;
+        const maxVal = +minRange.max;
+
+        function updatePrices(event) {
+            let minVal = +minRange.value;
+            let maxValCurr = +maxRange.value;
+
+            // Ensure the gap between sliders is at least `minGap`
+            if (maxValCurr - minVal < minGap) {
+                if (event.target.id === "minRange") {
+                    minRange.value = maxValCurr - minGap;
+                    minVal = +minRange.value;
+                } else {
+                    maxRange.value = minVal + minGap;
+                    maxValCurr = +maxRange.value;
+                }
+            }
+
+            // Update the displayed prices
+            minPrice.textContent = minVal;
+            maxPrice.textContent = maxValCurr;
+
+            // Calculate the percentage positions for the slider track
+            const percentMin = ((minVal - +minRange.min) / (maxVal - +minRange.min)) * 100;
+            const percentMax = ((maxValCurr - +minRange.min) / (maxVal - +minRange.min)) * 100;
+
+            // Update the slider track background
+            sliderTrack.style.background = `linear-gradient(to right, 
+                #ddd ${percentMin}%, 
+                #16a34a ${percentMin}%, 
+                #16a34a ${percentMax}%, 
+                #ddd ${percentMax}%)`;
+        }
+
+        // Add event listeners for both sliders
+        minRange.addEventListener("input", updatePrices);
+        maxRange.addEventListener("input", updatePrices);
+
+        // Initialize the slider track
+        updatePrices({ target: minRange });
+    </script>
+</body>
+</html>

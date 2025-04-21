@@ -1,0 +1,343 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0px;
+    background-color: #ffffff;
+}
+.container {
+    max-width: 1500px;
+    margin: 0 auto;
+}
+.flex-row {
+    display: flex;
+    gap: 1.5rem;
+}
+.sidebar {
+    width: 20%;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.main-content {
+    flex: 1;
+}
+.filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+.filter-section {
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 1.5rem;
+}
+.filter-section:last-child {
+    border-bottom: none;
+}
+.filter-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    margin-bottom: 1rem;
+    font-weight: 500;
+}
+.price-range {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+}
+.price-range span {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.price-filter {
+    position: relative;
+    width: 300px;
+    height: 40px;
+    box-sizing: border-box;
+}
+
+input[type="range"] {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-appearance: none;
+    background: none;
+    pointer-events: none; /* Prevents default, we’ll enable thumb only */
+    z-index: 2;
+    margin: 0px;
+}
+  
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background: #16a34a;
+    cursor: pointer;
+    pointer-events: all; /* Enable dragging */
+    position: relative;
+    z-index: 3;
+}
+  
+.slider-track {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 6px;
+    width: 100%;
+    background: #ddd;
+    z-index: 1;
+    border-radius: 3px;
+}
+
+.price-display{
+    display: flex;
+    width: 300px;
+    justify-content: space-between;
+}
+
+.checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.size-buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+}
+.size-button {
+    padding: 0.25rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+.size-button.selected {
+    background: #d1fae5;
+    border-color: #10b981;
+    color: #065f46;
+}
+button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+.btn-search {
+    background: #16a34a;
+    color: white;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+.search-bar {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 1.5rem;
+}
+#search-bar-container {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+.search-bar input {
+    width: 100%;
+    padding: 8px 12px;
+    margin-right: 12px;
+    border: none;
+    font-size: 14px;
+    line-height: 20px;
+    box-sizing: border-box;
+}
+.search-bar input:focus {
+    outline: none;
+}
+.search-bar svg {
+    color: #999;
+    margin-left: 8px;
+}
+.search-bar .btn-search {
+    width: auto;
+    margin-top: 1rem;
+    margin-left: auto;
+}
+.results-info {
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+.badge-filter {
+    background: #f4f4f5;
+    padding: 0.25rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.shoes-list {
+    min-width: 1024px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+}
+
+.card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: visible;
+    transition: transform 0.5s, box-shadow 0.5s;
+    border: 1px solid #E4E4E7;
+}
+
+.card:hover {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.card-image {
+    position: relative;
+    padding-top: 100%;
+    background-color: #f3f4f6;
+    border-top-right-radius: 8px;
+    border-top-left-radius: 8px;
+    overflow: hidden;
+}
+
+.no-image {
+    color: #666;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f3f4f6;
+    border-top-right-radius: 8px;
+    border-top-left-radius: 8px;
+}
+
+.card-image img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.card .badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    color: white;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.badge.success {
+    background-color: #22c55e; /* Green for "In Stock" */
+}
+
+.badge.warning {
+    background-color: #f59e0b; /* Orange for "Low Stock" */
+}
+
+.badge.destructive {
+    background-color: #ef4444; /* Red for "Out of Stock" */
+}
+
+.card-content {
+    padding: 16px;
+}
+
+.card-content h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #1f2937;
+}
+
+.card-content .text-gray {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.price {
+    color: #17a34a;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.flex-sizes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.flex-sizes span {
+    background-color: #f3f4f6; /* Light gray background */
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    color: #374151;
+}
+
+.card-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 16px 4px 12px 0px;
+}
+
+.stock-info {
+    font-size: 16px;
+}
+
+.card .sizes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 8px 0;
+}
+
+.card .sizes span {
+    background-color: #f3f4f6;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    color: #374151;
+}
+
+.view-detail{
+    background: none;
+    border: none;
+    padding: 0 !important;
+}

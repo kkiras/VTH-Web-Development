@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .slider-container {
+  position: relative;
+  width: 300px;
+  height: 40px;
+}
+
+input[type="range"] {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-appearance: none;
+  background: none;
+  pointer-events: none; /* Prevents default, we’ll enable thumb only */
+  z-index: 2;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: #007bff;
+  cursor: pointer;
+  pointer-events: all; /* Enable dragging */
+  position: relative;
+  z-index: 3;
+}
+
+.slider-track {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 6px;
+  width: 100%;
+  background: #ddd;
+  z-index: 1;
+  border-radius: 3px;
+}
+
+
+    </style>
+</head>
+<body>
+    <div class="price-filter">
+        <input type="range" id="minRange" min="0" max="1000" value="200" step="10">
+        <input type="range" id="maxRange" min="0" max="1000" value="800" step="10">
+        <div class="slider-track" id="sliderTrack"></div>
+    </div>
+    <div class="price-display">
+        <span id="minPrice">200</span>
+        <span id="maxPrice">800</span>
+    </div>
+      
+      <script> 
+const minRange = document.getElementById("minRange");
+const maxRange = document.getElementById("maxRange");
+const minPrice = document.getElementById("minPrice");
+const maxPrice = document.getElementById("maxPrice");
+const sliderTrack = document.getElementById("sliderTrack");
+
+const minGap = 50;
+const maxVal = +minRange.max;
+
+function updatePrices() {
+  let minVal = +minRange.value;
+  let maxValCurr = +maxRange.value;
+
+  if (maxValCurr - minVal < minGap) {
+    if (event.target.id === "minRange") {
+      minRange.value = maxValCurr - minGap;
+      minVal = +minRange.value;
+    } else {
+      maxRange.value = minVal + minGap;
+      maxValCurr = +maxRange.value;
+    }
+  }
+
+  minPrice.textContent = minVal;
+  maxPrice.textContent = maxValCurr;
+
+  const percentMin = (minVal / maxVal) * 100;
+  const percentMax = (maxValCurr / maxVal) * 100;
+
+  sliderTrack.style.background = `linear-gradient(to right, 
+    #ddd ${percentMin}%, 
+    #007bff ${percentMin}%, 
+    #007bff ${percentMax}%, 
+    #ddd ${percentMax}%)`;
+}
+
+minRange.addEventListener("input", updatePrices);
+maxRange.addEventListener("input", updatePrices);
+
+updatePrices(); // initial setup
+
+
+      </script>
+</body>
+</html>

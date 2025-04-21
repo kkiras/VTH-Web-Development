@@ -1,0 +1,344 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #ffffff;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    display: flex;
+    gap: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.form-section {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-section {
+    flex: 2;
+}
+
+.preview-section {
+    background-color: white;
+    padding: 20px;
+    flex: 1;
+}
+
+h1, h3 {
+    color: #17a34a;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.form-group input, .form-group textarea, .form-group select {
+    width: 100%;
+    height: 40px;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.form-group textarea {
+    height: 80px;
+    resize: none;
+}
+
+.image-upload, .json-file-upload {
+    border: 2px dashed #ddd;
+    padding: 16px;
+    text-align: center;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.3s;
+}
+
+.text-green-600 {
+    --tw-text-opacity: 1;
+    color: rgb(22 163 74 / var(--tw-text-opacity, 1));
+}
+
+.image-upload:hover, .json-file-upload:hover {
+    background-color: #f5f5f5;
+}
+
+.image-upload p, .json-file-upload p {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+}
+
+.image-upload p:nth-of-type(2), .json-file-upload p:nth-of-type(2) {
+    color: #9CA3AF;
+    font-size: 12px!important;
+}
+
+.image-upload input, .json-file-upload input {
+    display: none;
+}
+
+#json-field-toggle {
+   cursor: pointer;
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+}
+
+#json-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease, transform 0.5s ease, opacity 0.5s ease;
+    transform: translateY(-20px);
+    opacity: 0;
+    /* padding: 0 15px;
+    border-radius: 6px;
+    margin-top: 10px; */
+}
+#json-content.show{
+    max-height: 560px; /* Adjust to fit your content */
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.hidden {
+    display: none !important;
+}
+.json-file-upload .visible {
+    display: block !important;
+}
+#jsonPreview #json-firstItem {
+    background: #f9fafb;
+    padding: 10px;
+    border-radius: 6px;
+    font-family: monospace;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.inline {
+    display: flex;
+    gap: 15px;
+}
+
+.inline div {
+    flex: 1;
+}
+
+.sizes {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.sizes label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+button {
+    background-color: #17a34a;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    width: 100%;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #15803D;
+}
+
+.preview-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    text-align: center;
+    position: relative;
+    height: auto; /* Fixed height to match the tallest content */
+    overflow: hidden; /* Prevent overflow during transition */
+}
+
+.preview-image {
+    background-color: #f5f5f5;
+    aspect-ratio: 1/1;
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+    opacity: 1;
+    transition: opacity 0.3s ease; /* Add opacity transition */
+}
+
+.preview-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.preview-details {
+    padding: 16px;
+    opacity: 1;
+    transition: opacity 0.3s ease; /* Add opacity transition */
+}
+
+.preview-details h4 {
+    margin: 0;
+    font-size: 16px;
+    text-align: left;
+}
+
+.preview-details p {
+    margin: 5px 0 0;
+    color: #17a34a;
+    text-align: left;
+}
+
+.preview-details-hover {
+    position: absolute;
+    display: flex;
+    height: 100%;
+    justify-content: space-between;
+    flex-direction: column;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    opacity: 0;
+    padding: 16px;
+    text-align: left;
+    transition: opacity 0.3s ease; /* Add opacity transition */
+    box-sizing: border-box;
+}
+
+.preview-details-hover h4 {
+    margin: 0 0 10px;
+    font-size: 16px;
+    color: #17a34a;
+}
+
+.preview-details-hover p {
+    margin: 5px 0;
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.preview-info{
+    margin-top: 16px;
+}
+
+.preview-info p {
+    margin: 5px 0;
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.preview-sizes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin: 5px 0;
+}
+
+.preview-sizes span {
+    background-color: #e8f5e9;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.preview-price-hover {
+    font-weight: bold;
+    font-size: 16px!important;
+    margin-top: 12px!important;
+    margin-bottom: 0px!important;
+    color: #17a34a;
+}
+
+.preview-card:hover .preview-image,
+.preview-card:hover .preview-details {
+    opacity: 0; /* Fade out on hover */
+}
+
+.preview-card:hover .preview-details-hover {
+    opacity: 1; /* Fade in on hover */
+}
+
+.hover-text {
+    font-size: 12px;
+    color: #666;
+    text-align: center;
+    margin-top: 10px;
+}
+
+nav div{
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    
+}
+
+nav div a{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: #6B7280;
+    font-size: 14px;
+    padding: 12px 16px;
+    box-sizing: border-box;
+    line-height: 20px;
+    border-bottom: 4px solid transparent;
+}
+
+nav div a.active{
+    background-color: #F0FDF4;
+    color: #15803D!important;
+    border-bottom: 4px solid #17a34a;
+    box-sizing: border-box;
+}
+
+nav div a.active svg{
+    color: #15803D!important;
+}
+
+nav div a svg{
+    width: 20px;
+    height: 20px;
+    color: #6B7280!important;
+}
+
+nav div a span{
+    font-weight: 600;
+}
+
+nav div a:hover{
+    background-color: #F0FDF4;
+    color: #15803D;
+}
+h1{
+    max-width: 1400px;
+    margin: 20px auto 44px;
+}
