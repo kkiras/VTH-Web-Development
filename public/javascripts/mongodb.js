@@ -1,7 +1,7 @@
 const { MongoClient, ObjectId } = require("mongodb");
 
 const mongodbUrl = "mongodb://localhost:27017";
-const dbName = "data-nhom";
+const dbName = "mydb";
 const collectionName = "shoes-2";
 
 let dbCollection;
