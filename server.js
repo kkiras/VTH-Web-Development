@@ -164,7 +164,6 @@ app.get('/searching', async (req, res) => {
     size: size || null
   };
   console.log('Search query:', searchQuery);
-  // console.log('Search queryyy:', nameOrBrand);
   if (searchQuery.nameOrBrand || searchQuery.brand || searchQuery.size) {
     result = await mongodbModule.findDocument(searchQuery);
   } else {

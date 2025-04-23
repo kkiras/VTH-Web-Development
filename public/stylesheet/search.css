@@ -346,3 +346,53 @@ button {
     border: none;
     padding: 0 !important;
 }
+
+nav {
+    margin-bottom: 40px;
+}
+
+nav div{
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    
+}
+
+nav div a{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: #6B7280;
+    font-size: 14px;
+    padding: 12px 16px;
+    box-sizing: border-box;
+    line-height: 20px;
+    border-bottom: 4px solid transparent;
+}
+
+nav div a.active{
+    background-color: #F0FDF4;
+    color: #15803D!important;
+    border-bottom: 4px solid #17a34a;
+    box-sizing: border-box;
+}
+
+nav div a.active svg{
+    color: #15803D!important;
+}
+
+nav div a svg{
+    width: 20px;
+    height: 20px;
+    color: #6B7280!important;
+}
+
+nav div a span{
+    font-weight: 600;
+}
+
+nav div a:hover{
+    background-color: #F0FDF4;
+    color: #15803D;
+}
