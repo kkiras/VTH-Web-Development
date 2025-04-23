@@ -35,7 +35,7 @@ const upload = multer({ storage: storage });
 
 // --- Page Routes ---
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, './public/pages/list.html'));
+  res.sendFile(path.join(__dirname, './public/pages/home.html'));
 });
 
 app.get('/create', (req, res) => {
