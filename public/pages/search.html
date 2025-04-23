@@ -190,7 +190,7 @@
                 .then(result => {
                     filteredShoes = result;
                     console.log("Filtered shoes:", filteredShoes);
-                    // displayResults();
+                    displayResults();
                 })
                 .catch(error => {
                     console.error("Error fetching shoes:", error);
@@ -245,7 +245,7 @@
                 shoesList.innerHTML += `
                     <div class="card">
                         <div class="card-image">
-                            ${shoe.image ? `<img src="http://localhost:3000/${shoe.image}" >` : `<div class="no-image">No Image</div>`}
+                            ${shoe.image ? `<img src="http://localhost:3000/images/${shoe.image}" >` : `<div class="no-image">No Image</div>`}
                             <span class="badge ${stockStatus.color}">${stockStatus.label}</span>
                         </div>
                         <div class="card-content">
@@ -306,7 +306,6 @@
             let minVal = +minRange.value;
             let maxValCurr = +maxRange.value;
 
-            // Ensure the gap between sliders is at least `minGap`
             if (maxValCurr - minVal < minGap) {
                 if (event.target.id === "minRange") {
                     minRange.value = maxValCurr - minGap;
@@ -317,15 +316,12 @@
                 }
             }
 
-            // Update the displayed prices
             minPrice.textContent = new Intl.NumberFormat('vi-VN').format(minVal) + ' VNĐ';
             maxPrice.textContent = new Intl.NumberFormat('vi-VN').format(maxValCurr) + ' VNĐ';
 
-            // Calculate the percentage positions for the slider track
             const percentMin = ((minVal - +minRange.min) / (maxVal - +minRange.min)) * 100;
             const percentMax = ((maxValCurr - +minRange.min) / (maxVal - +minRange.min)) * 100;
 
-            // Update the slider track background
             sliderTrack.style.background = `linear-gradient(to right, 
                 #ddd ${percentMin}%, 
                 #16a34a ${percentMin}%, 
@@ -333,11 +329,9 @@
                 #ddd ${percentMax}%)`;
         }
 
-        // Add event listeners for both sliders
         minRange.addEventListener("input", updatePrices);
         maxRange.addEventListener("input", updatePrices);
 
-        // Initialize the slider track
         updatePrices({ target: minRange });
     </script>
 </body>

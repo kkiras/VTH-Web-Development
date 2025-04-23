@@ -1,16 +1,25 @@
+const e = require("express");
 const { MongoClient, ObjectId } = require("mongodb");
 
 const mongodbUrl = "mongodb://localhost:27017";
 const dbName = "data-nhom";
-const collectionName = "shoes-2";
+const collectionName = "shoes-6";
+
+const imageShoeCollection = "shoes-image";
+
+const JSONimportCollection = "shoes-json";
 
 let dbCollection;
 let client;
+let imageShoeCollectionDB;
+let jsonImportCollectionDB;
 
 async function connectToMongoDB() {
   try {
     client = await MongoClient.connect(mongodbUrl);
     dbCollection = client.db(dbName).collection(collectionName);
+    imageShoeCollectionDB = client.db(dbName).collection(imageShoeCollection);
+    jsonImportCollectionDB = client.db(dbName).collection(JSONimportCollection);
   } catch (err) {
     console.error("Error connecting to MongoDB:", err);
     throw err;
@@ -32,16 +41,65 @@ async function closeMongoDBConnection() {
   }
 }
 
-async function insertDocument(newShoes) {
+async function findAllDocuments(condition) {
   try {
-    return Array.isArray(newShoes)
-      ? await dbCollection.insertMany(newShoes)
-      : await dbCollection.insertOne(newShoes);
+    let cursor;
+    switch (condition) {
+      case "name-asc":
+        cursor = dbCollection.find({}).sort({ name: 1 });
+        break;
+      case "name-desc":
+        cursor = dbCollection.find({}).sort({ name: -1 });
+        break;
+      case "price-asc":
+        cursor = dbCollection.find({}).sort({ price: 1 });
+        break;
+      case "price-desc":
+        cursor = dbCollection.find({}).sort({ price: -1 });
+        break;
+      case "stock-asc":
+        cursor = dbCollection.find({}).sort({ stock: 1 });
+        break;
+      case "stock-desc":
+        cursor = dbCollection.find({}).sort({ stock: -1 });
+        break;
+      default:
+        cursor = dbCollection.find({});
+    }
+
+    const documents = await cursor.toArray();
+    console.log("All documents:", documents.length);
+    return documents;
+  } catch (err) {
+    console.error("Error fetching all shoes:", err);
+    throw err;
+  }
+}
+
+async function insertDocument(newShoes, newImages) {
+  try {
+      if(newImages) {
+        Array.isArray(newShoes)
+        ? await dbCollection.insertMany(newShoes)
+        : await dbCollection.insertOne(newShoes);
+
+        Array.isArray(newImages)
+        ? await imageShoeCollectionDB.insertMany(newImages)
+        : await imageShoeCollectionDB.insertOne(newImages);
+      }
+      else {
+        Array.isArray(newShoes)
+        ? await jsonImportCollectionDB.insertMany(newShoes)
+        : await jsonImportCollectionDB.insertOne(newShoes);
+      }
+    
   } catch (err) {
     console.error("Error inserting document:", err);
     throw err;
   }
 }
+
+
 
 async function findDocumentsByName(name) {
   try {
@@ -53,9 +111,9 @@ async function findDocumentsByName(name) {
   }
 }
 
-async function findDocumentById(id) {
+async function findDocumentById(query) {
   try {
-    return await dbCollection.findOne({ _id: new ObjectId(id) });
+    return await dbCollection.findOne(query);
   } catch (err) {
     console.error("Error finding document by ID:", err);
     throw err;
@@ -99,11 +157,11 @@ async function findDocumentsByIdOrName({ id, name }) {
   }
 }
 
-async function updateShoeById(id, updatedData) {
+async function updateShoeById(editShoe) {
   try {
     const result = await dbCollection.updateOne(
-      { _id: new ObjectId(id) },
-      { $set: updatedData }
+      { id: editShoe.id }, 
+      { $set: editShoe }
     );
     return result;
   } catch (err) {
@@ -152,13 +210,113 @@ async function findDocument(query) {
             } 
         });
     }
+    
 
     const mongoQuery = filters.length > 0 ? { $and: filters } : {};
 
     const documents = await dbCollection.find(mongoQuery).toArray();
+    console.log("Search results:", documents.length);
     return documents;
 }
+
+async function updateManyByID(updateList, updateImageShoes) {
+  try {
+    if(!Array.isArray(updateList) || !Array.isArray(updateImageShoes)) {
+      await dbCollection.updateOne(
+        { id: updateList.id }, 
+        { $set: updateList }  
+      );
+      if(!updateImageShoes) return;
+      await imageShoeCollectionDB.updateOne(
+        { id: updateImageShoes.id }, 
+        { $set: updateImageShoes }, 
+        { upsert: true });
+      return;
+    }
+    for (const updatedShoe of updateList) {
+      await dbCollection.updateOne(
+        { id: updatedShoe.id }, // Filter to match the document
+        { $set: updatedShoe }   // Update operation
+      );
+
+    }
+  } catch (error) {
+    throw error
+  }
+  console.log("updateImageShoes", updateImageShoes);
+  try {
+    for (const updatedImageShoe of updateImageShoes) {
+      const filter = { id: updatedImageShoe.id }; // Define the filter based on the unique identifier
+      const update = { $set: updatedImageShoe }; // Define the update operation
   
+      await imageShoeCollectionDB.updateOne(filter, update, { upsert: true });
+    }
+  }catch (error) {
+      throw error
+    }
+  
+}
+
+async function findImageByShoeID(id) {
+    const shoeImage = await imageShoeCollectionDB.findOne({ id: id });
+    const image = shoeImage ? shoeImage.image : null;
+    return image
+    
+}
+
+async function findImageByImageName(name) {
+  const shoeImage = await imageShoeCollectionDB.findOne({ 'image.name': name });
+    const image = shoeImage ? shoeImage.image : null;
+    return image
+}
+
+async function updateManyBySearchResult(priceMinus, brand, lessStock) {
+  try{
+    await dbCollection.updateMany(
+      { stock: { $lt: parseInt(lessStock) }, brand: { $regex: brand, $options: 'i' } },  // Compound filter
+      { $inc: { price: -parseInt(priceMinus) } }         // Decrease price by 1,000,000
+    );
+    // console.log(priceMinus, brand, lessStock);
+    // const matchingDocs = await dbCollection.find({
+    //   stock: { $lt: parseInt(lessStock) },
+    //   brand: { $regex: brand, $options: 'i' }
+    // }).toArray();
+    
+    // console.log(matchingDocs);
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function getHighestID() {
+  try {
+    const result = await dbCollection.aggregate([
+      {
+        $addFields: {
+          numericId: {
+            $toInt: {
+              $substrCP: [
+                "$id",
+                { $subtract: [ { $strLenCP: "$id" }, 3 ] },
+                3
+              ]
+            }
+          }
+        }
+      },
+      { $sort: { numericId: -1 } },
+      { $limit: 1 }
+    ]).toArray();
+
+    if (result.length > 0) {
+      return result[0].numericId;
+    } else {
+      return null; // No documents found
+    }
+  } catch (error) {
+    throw error;
+  }
+}
 
 
 module.exports = {
@@ -171,4 +329,10 @@ module.exports = {
   findDocumentsByIdOrName,
   updateShoeById,
     findDocument,
+    updateManyByID,
+    updateManyBySearchResult,
+    findImageByShoeID,
+    findImageByImageName,
+    getHighestID,
+    findAllDocuments
 };

@@ -1,3 +1,5 @@
+
+
 function previewImage(event) {
     const file = event.target.files[0];
     if (file) {
@@ -11,10 +13,11 @@ function previewImage(event) {
 }
 
 function updatePreview() {
+    const id = document.getElementById('id').value;
     const name = document.getElementById('name').value;
     const price = document.getElementById('price').value;
     const description = document.getElementById('description').value;
-    const category = document.getElementById('category').value;
+    const brand = document.getElementById('brand').value;
     const color = document.getElementById('color').value;
     const stock = document.getElementById('stock').value;
 
@@ -23,10 +26,11 @@ function updatePreview() {
     document.getElementById('previewPrice').textContent = price;
 
     // Update hover preview
+    // document.getElementById('previewNameHover').textContent = name;
     document.getElementById('previewNameHover').textContent = name;
     document.getElementById('previewPriceHover').textContent = price;
     document.getElementById('previewDescriptionHover').textContent = description;
-    document.getElementById('previewCategoryHover').textContent = category;
+    document.getElementById('previewBrandHover').textContent = brand;
     document.getElementById('previewColorHover').textContent = color;
     document.getElementById('previewStockHover').textContent = `${stock} units`;
 
@@ -38,17 +42,21 @@ function updatePreview() {
 }
 
 function populateForm(shoeData) {
+    document.getElementById('id').value = shoeData.id || '';
     document.getElementById('name').value = shoeData.name || '';
     document.getElementById('price').value = shoeData.price || '';
     document.getElementById('description').value = shoeData.description || '';
-    document.getElementById('category').value = shoeData.category || '';
+    document.getElementById('brand').value = shoeData.brand || '';
+    
+    document.getElementById('type').value = shoeData.type || '';
+    document.getElementById('gender').value = shoeData.gender || '';
     document.getElementById('color').value = shoeData.color || '';
     document.getElementById('stock').value = shoeData.stock || '';
 
     // Set the image preview if available
     if (shoeData.image) {
         const previewImage = document.getElementById('previewImage');
-        previewImage.innerHTML = `<img src="${shoeData.image}" >`;
+        previewImage.innerHTML = `<img src="http://localhost:3000/images/${shoeData.image}" >`;
     }
 
     const sizeCheckboxes = document.querySelectorAll('input[name="size[]"]');
@@ -56,6 +64,37 @@ function populateForm(shoeData) {
         checkbox.checked = shoeData.size?.includes(checkbox.value) || false;
     });
 
+    updatePreview();
+    console.log('Current next shoe data:', shoeData.id);
+}
+
+function btnStateHandle(){
+    document.getElementById('btn-add-shoe').disabled = true;
+    document.getElementById('btn-add-shoe').style.background = '#ddd';
+    document.getElementById('btn-add-shoe').style.cursor = 'not-allowed';
+
+    document.getElementById('btn-submit-shoe').disabled = false;
+    document.getElementById('btn-submit-shoe').style.background = '#16a34b';
+    document.getElementById('btn-submit-shoe').style.cursor = 'pointer';
+}
+
+function resetForm(){
+    document.getElementById('id').value = '';
+    document.getElementById('name').value = '';
+    document.getElementById('price').value = '';
+    document.getElementById('description').value = '';
+    document.getElementById('brand').value = '';
+    
+    document.getElementById('type').value = '';
+    document.getElementById('gender').value = '';
+    document.getElementById('color').value = '';
+    document.getElementById('stock').value = '';
+
+    const sizeCheckboxes = document.querySelectorAll('input[name="size[]"]');
+    sizeCheckboxes.forEach(checkbox => {
+        checkbox.checked = false;
+    });
+    document.getElementById('previewImage').innerText = 'No Image';
     updatePreview();
 }
 

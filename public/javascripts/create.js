@@ -50,7 +50,7 @@ function updatePreview() {
     const name = document.getElementById('name').value;
     const price = document.getElementById('price').value;
     const description = document.getElementById('description').value;
-    const category = document.getElementById('category').value;
+    const brand = document.getElementById('brand').value;
     const color = document.getElementById('color').value;
     const stock = document.getElementById('stock').value;
 
@@ -62,7 +62,7 @@ function updatePreview() {
     document.getElementById('previewNameHover').textContent = name;
     document.getElementById('previewPriceHover').textContent = price;
     document.getElementById('previewDescriptionHover').textContent = description;
-    document.getElementById('previewCategoryHover').textContent = category;
+    document.getElementById('previewCategoryHover').textContent = brand;
     document.getElementById('previewColorHover').textContent = color;
     document.getElementById('previewStockHover').textContent = `${stock} units`;
 

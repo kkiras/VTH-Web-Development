@@ -11,11 +11,9 @@
       margin: 0;
       font-family: Arial, sans-serif;
       background-color: #f8f8fa;
-      display: flex;
-      justify-content: center;
     }
 
-    .container {
+    .container .container2 {
       display: flex;
       background: white;
       height: 740px;
@@ -124,63 +122,51 @@
 <body>
 
 <div class="container">
+    
+</div>
+
+<script>
+  const selectedShoe = JSON.parse(localStorage.getItem('shoe'));
+  const content = document.createElement('div');
+  content.classList.add('container2');
+
+  content.innerHTML = `
     <div class="floating-btn-group">
         <button class="floating-btn" style="background-color: #4caf50; color: white;">Back</button>
         <button class="floating-btn" style="background-color: #2196F3; color: white;">Edit</button>
         <button class="floating-btn" style="background-color: #f44336; color: white;">Delete</button>
     </div>
 
-  <div class="left-panel">
-    <img src="image-4.png" alt="Product Image">
-  </div>
-
-  <div class="right-panel">
-    <div class="title">Adidas Ultraboost 22</div>
-    <div class="rating">⭐ 4.8 (36 reviews)</div>
-
-    <div class="section">
-      <label>Select Quality</label>
-      <div class="options">
-        <button>Standard</button>
-        <button>Premium</button>
-      </div>
+    <div class="left-panel">
+      <img src="http://localhost:3000/images/${selectedShoe.image}" alt="Product Image">
     </div>
 
-    <div class="section">
-      <label>Color</label>
-      <div class="options">
-        <button style="background:#4caf50;">&nbsp;</button>
-        <button style="background:#222;">&nbsp;</button>
-      </div>
+    <div class="right-panel">
+      <p id="id" name="id">Mã sản phẩm: ${selectedShoe.id}</p>
+        <h1 id="name" name="name">Tên sản phẩm: ${selectedShoe.name}</h1>
+        <p id="brand" name="brand">Thương hiệu: ${selectedShoe.brand}</p>
+        <p id="type" name="type">Loại: ${selectedShoe.type}</p>
+        <p id="gender" name="gender">Giới tính: ${selectedShoe.gender}</p>
+        <p id="description" name="description">
+          Mô tả: ${selectedShoe.description}
+        </p>
+        <p id="price" name="price">Giá: ${selectedShoe.price}</p>
+        <div class="sizes">
+          <label for="size-options">Kích cỡ:</label>
+          <ul id="size-options" name="size-options">
+            <li>39</li>
+            <li>40</li>
+            <li>41</li>
+            <li>42</li>
+            <li>43</li>
+            <li>44</li>
+          </ul>
+        </div>
     </div>
-
-    <div class="section">
-      <label>Size</label>
-      <div class="options">
-        <button>39</button>
-        <button>40</button>
-        <button>41</button>
-        <button>42</button>
-        <button>43</button>
-        <button>44</button>
-      </div>
-    </div>
-
-    <div class="product-info">
-      Đệm Boost mang lại cảm giác êm ái và trả năng lượng tốt cho mỗi bước chạy.
-      <div class="info-grid">
-        <div><strong>Material:</strong> Primeknit, Boost Foam</div>
-        <div><strong>Weight:</strong> 310g (size 42)</div>
-        <div><strong>Release Date:</strong> 2022-01-20</div>
-        <div><strong>SKU:</strong> AD-UB-22-042</div>
-      </div>
-    </div>
-
-    <div class="price">4.500.000₫</div>
-    <div class="stock">In Stock - 12 units</div>
-
-  </div>
-</div>
+  `
+  const rightPanel = document.querySelector('.container');
+  rightPanel.appendChild(content);
+</script>
 
 </body>
 </html>

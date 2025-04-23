@@ -2,7 +2,7 @@ const express = require('express');
 const mongodbModule = require('./public/javascripts/mongodb.js');
 const multer = require('multer');
 const path = require('path');
-const { ObjectId } = require('mongodb');
+const queryString = require('querystring');
 
 const app = express();
 const server = app.listen(3000, () => {
@@ -13,6 +13,9 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 let newShoesAdded = [];
+let newImagesAdded = [];
+let updateList = [];
+let updateImageShoes = [];
 
 mongodbModule.connectToMongoDB()
   .then(() => {
@@ -32,7 +35,7 @@ const upload = multer({ storage: storage });
 
 // --- Page Routes ---
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'practice.html'));
+  res.sendFile(path.join(__dirname, './public/pages/list.html'));
 });
 
 app.get('/create', (req, res) => {
@@ -44,19 +47,66 @@ app.get('/search', (req, res) => {
 });
 
 app.get('/update', (req, res) => {
-  res.sendFile(path.join(__dirname, './public/pages/update.html'));
+  res.sendFile(path.join(__dirname, './public/pages/update-2.html'));
+});
+
+app.get('/update-detail', (req, res) => {
+  res.sendFile(path.join(__dirname, './public/pages/update-form-2.html'));
 });
 
 app.get('/delete', (req, res) => {
   res.sendFile(path.join(__dirname, './public/pages/delete.html'));
 });
 
+app.get('/read/for/update', async (req, res) => {
+  const id = req.query.id;
+  console.log('ID for update:', id);
+  const query =  { id: { $regex: id, $options: 'i' } };
+  try {
+    editShoe = await mongodbModule.findDocumentById(query);
+    console.log('Shoe for update:', editShoe);
+    const queryParams = queryString.stringify(editShoe);
+    res.redirect(`/update-detail?${queryParams}`);
+  } catch (error) {
+    console.error('Error fetching shoe for update:', error);
+    res.status(500).json({ message: 'Error fetching shoe for update' });
+  }
+  
+});
+
 // --- Data APIs ---
+
+app.get('/load-all-shoes', async (req, res) => {
+  const condition = req.query.condition;
+  try {
+    if(condition) {
+      console.log('Condition:', condition);
+      const shoes = await mongodbModule.findAllDocuments(condition);
+      res.status(200).json(shoes);
+      return;
+    }
+    const shoes = await mongodbModule.findAllDocuments();
+    res.status(200).json(shoes);
+  } catch (error) {
+    console.error('Error fetching all shoes:', error);
+    res.status(500).json({ message: 'Error fetching all shoes' });
+  }
+});
 
 // Reset in-memory list
 app.get('/reload-shoes-added', (req, res) => {
   newShoesAdded = [];
   res.status(200).json({ message: `Length of list is [${newShoesAdded.length}].` });
+});
+
+app.get('/highest-id', async (req, res) => {
+  try {
+    const highestId = await mongodbModule.getHighestID();
+    res.status(200).json({ highestId });
+  } catch (error) {
+    console.error('Error fetching highest ID:', error);
+    res.status(500).json({ message: 'Error fetching highest ID' });
+  }
 });
 
 // Add shoe from form
@@ -65,21 +115,20 @@ app.post('/api/shoe', upload.single('image'), async (req, res) => {
     return res.status(400).json({ message: 'No file uploaded' });
   }
   const newShoe = req.body;
-  newShoe.image = {
+  newShoe.image = req.file.originalname;
+
+  const newImageShoe = {}
+  newImageShoe.image = {
     name: req.file.originalname,
     mimeType: req.file.mimetype,
     imageData: Buffer.from(req.file.buffer, 'binary')
   };
-
-  // Validate input
-  if (!newShoe.name || !newShoe.price || !newShoe.brand) {
-    return res.status(400).json({ message: 'Missing required fields' });
-  }
+  newImageShoe.id = newShoe.id;
 
   try {
-    const result = await mongodbModule.insertDocument(newShoe);
     newShoesAdded.push(newShoe);
-    return res.status(200).json({ message: 'Shoe added successfully', shoe: result });
+    newImagesAdded.push(newImageShoe);
+    return res.status(200).json({ message: 'Shoe added successfully to list!' });
   } catch (error) {
     console.error('Error inserting shoe:', error);
     return res.status(500).json({ message: 'Error adding shoe' });
@@ -88,20 +137,20 @@ app.post('/api/shoe', upload.single('image'), async (req, res) => {
 
 // Persist shoes to DB
 app.get('/api/shoes', async (req, res) => {
-  addNewShoes(newShoesAdded, res);
+  addNewShoes(newShoesAdded, newImagesAdded, res);
 });
 
 // Add shoes from JSON file
 app.post('/api/json-file', async (req, res) => {
   const jsonData = req.body.data;
-  addNewShoes(jsonData, res);
+  addNewShoes(jsonData, null, res);
 });
 
 // Load image by name
-app.get('/images/:imageName', async (req, res) => {
-  const imageName = req.params.imageName;
-  await loadShoes(imageName, res);
-});
+// app.get('/images/:imageName', async (req, res) => {
+//   const imageName = req.params.imageName;
+//   await loadShoes(imageName, res);
+// });
 
 // Search shoes
 app.get('/searching', async (req, res) => {
@@ -170,6 +219,91 @@ app.put('/api/shoes/:id', upload.single('image'), async (req, res) => {
   }
 });
 
+app.post('/update-add', upload.single('image'), async (req, res) => {
+  if (!req.file) {
+    // return res.status(400).json({ message: 'No file uploaded' });
+  }
+  const updatedShoe = req.body;
+  const updateImageShoe = {}
+  console.log('Updated shoe:', updatedShoe);
+  if(req.file) {
+    updatedShoe.image = req.file.originalname;
+
+    updateImageShoe.image = {
+      name: req.file.originalname,
+      mimeType: req.file.mimetype,
+      imageData: Buffer.from(req.file.buffer, 'binary')
+    };
+    updateImageShoe.id = updatedShoe.id;
+  }
+
+  try {
+    updateList.push(updatedShoe);
+    updateImageShoes.push(updateImageShoe);
+    return res.status(200).json({ message: 'Shoe added successfully to update list!' });
+  } catch (error) {
+    console.error('Error inserting shoe:', error);
+    return res.status(500).json({ message: 'Error adding shoe to update list.' });
+  }
+});
+
+app.put('/update-one', upload.single('image'), async (req, res) => {
+  const editShoe = req.body;
+  if (!req.file) {
+
+    // return res.status(400).json({ message: 'No file uploaded' });
+    updateOne(editShoe, null, res);
+  }
+  // console.log('Edit shoe DB:', editShoe);
+  const updateImageShoe = {}
+  if(req.file) {
+    editShoe.image = req.file.originalname;
+
+    updateImageShoe.image = {
+      name: req.file.originalname,
+      mimeType: req.file.mimetype,
+      imageData: Buffer.from(req.file.buffer, 'binary')
+    };
+    updateImageShoe.id = editShoe.id;
+    updateOne(editShoe, updateImageShoe, res);
+  }
+})
+
+app.put('/update-many', async (req, res) => {
+  updateShoes(updateList, res);
+});
+
+
+
+app.put('/update-price-many', async (req, res) => {
+  const { price, stock, brand } = req.body;
+  updateMany(price, brand, stock, res);
+
+});
+
+app.get('/images/:name', async (req, res) => {
+  const name = req.params.name;
+  console.log('Image name:', name);
+  try {
+    const image = await mongodbModule.findImageByImageName(name);
+    if (image) {
+      const imageData = image.imageData.buffer;
+      const mimeType = image.mimeType;
+      res.writeHead(200, {
+        'Content-Type': mimeType,
+        'Content-Length': imageData.length
+      });
+      res.end(Buffer.from(image.imageData.buffer, 'binary'));
+    } else {
+      res.status(404).send('Image not found');
+    }
+  } catch (err) {
+    console.error('Failed to load image:', err);
+    res.status(500).send('Error fetching image');
+  }
+})
+
+
 // --- Helper Functions ---
 
 // async function loadShoes(imageName, res) {
@@ -193,13 +327,48 @@ app.put('/api/shoes/:id', upload.single('image'), async (req, res) => {
 //   }
 // }
 
-async function addNewShoes(shoeList, res) {
+async function loadShoes(imageName, res) {
+
+}
+
+async function addNewShoes(shoeList, imgList, res) {
   try {
-    const result = await mongodbModule.insertDocument(shoeList);
+    await mongodbModule.insertDocument(shoeList, imgList);
     newShoesAdded = [];
     res.status(200).json({ message: 'Shoes uploaded to database successfully' });
   } catch (error) {
     console.error('Error uploading shoes:', error);
     res.status(500).json({ message: 'Error uploading shoes' });
+  }
+}
+
+async function updateShoes(shoeList, res) {
+  try {
+    await mongodbModule.updateManyByID(shoeList, updateImageShoes);
+    newShoesAdded = [];
+    res.status(200).json({ message: 'Shoes updated in database successfully' });
+  } catch (error) {
+    console.error('Error updating shoes:', error);
+    res.status(500).json({ message: 'Error updating shoes' });
+  }
+}
+
+async function updateOne(shoe, image,  res){
+  try {
+    await mongodbModule.updateManyByID(shoe, image);
+    res.status(200).json({ message: 'Shoes updated in database successfully' });
+  } catch (error) {
+    console.error('Error updating shoes:', error);
+    res.status(500).json({ message: 'Error updating shoes' });
+  }
+};
+
+async function updateMany(price, brand, stock, res) {
+  try {
+    await mongodbModule.updateManyBySearchResult(price, brand, stock);
+    res.status(200).json({ message: 'Shoes updated in database successfully' });
+  } catch (error) {
+    console.error('Error updating shoes:', error);
+    res.status(500).json({ message: 'Error updating shoes' });
   }
 }

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update</title>
+    <link rel="stylesheet" href="/stylesheet/update-search.css">
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <div>
+                <a href="/" >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layout-grid h-5 w-5 text-green-600"><rect width="7" height="7" x="3" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="14" rx="1"></rect><rect width="7" height="7" x="3" y="14" rx="1"></rect></svg>
+                    <span>Shoe List</span>
+                </a>
+                <a href="/create" >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-plus h-5 w-5 text-gray-500"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path><path d="M12 8v8"></path></svg>
+                    <span>Add Shoe</span>
+                </a>
+                <a href="/update" class="active">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-square-pen h-5 w-5 text-gray-500"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.375 2.625a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4Z"></path></svg>
+                    <span>Update Shoe</span>
+                </a>
+                <a href="/delete-shoe">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash2 h-5 w-5 text-gray-500"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" x2="10" y1="11" y2="17"></line><line x1="14" x2="14" y1="11" y2="17"></line></svg>
+                    <span>Delete Shoe</span>
+                </a>
+            </div>
+        </nav>
+
+
+        <div class="search-section">
+            <h2>Search Shoes to Delete</h2>
+            <div class="search-form">
+                <div class="form-group">
+                    <label for="search-id">Shoe ID</label>
+                    <input type="text" id="search-id" placeholder="Enter shoe ID...">
+                </div>
+                <div class="form-group">
+                    <label for="search-name">Shoe Name</label>
+                    <input type="text" id="search-name" placeholder="Enter shoe name...">
+                </div>
+            </div>
+            <div class="button-group">
+                <button class="btn-search" onclick="handleSearch()">
+                    Search
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                </button>
+                <button class="btn-reset" onclick="handleReset()">
+                    Reset
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <div id="search-for-update-many">
+                <div class="form-group">
+                    <label for="search-stock">Stock [update for less than 'input stock']</label>
+                    <input type="text" id="search-stock" placeholder="Enter stock...">
+                </div>
+                <div class="form-group">
+                    <label for="set-price-decrease">Set price mines [update for newPrice = oldPrice - inputPrice]</label>
+                    <input type="text" id="set-price-decrease" placeholder="Enter price for decreasing...">
+                </div>
+                <button class="btn-update-many" onclick="handleUpdateMany()">
+                    Update Many
+                </button>
+            </div>
+        </div>
+
+        <div class="hidden" id="results-section">
+            <div class="results-header">
+                <h2>Search Results</h2>
+                <a id="btn-update-all" class="btn-delete" onclick="handleUpdateAll()">
+                    Update All (<span id="results-count">0</span>)
+                </a>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Stock</th>
+                        <th style="text-align: right;">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="results-body"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let searchResults = [];
+        let updateList = [];
+
+        function handleSearch() {
+            const searchName = document.getElementById('search-name').value.trim();
+            const query = new URLSearchParams();
+            if (searchName) query.set('name', searchName);
+            // window.history.pushState({}, '', `/update?${query.toString()}`);
+
+            fetch(`/get-all-shoes?${query.toString()}`)
+            .then(response => response.json())
+            .then(shoes => {
+                searchResults.push(...shoes);
+                console.log("Search result: ", searchResults); // Keep includes
+                displayResults();
+            })
+            .catch(error => console.error('Error fetching shoes:', error));
+        }
+
+
+        function displayResults() {
+            const resultsSection = document.getElementById('results-section');
+            const resultsBody = document.getElementById('results-body');
+            const resultsCount = document.getElementById('results-count');
+
+            resultsSection.classList.remove('hidden');
+            resultsCount.textContent = searchResults.length;
+
+            resultsBody.innerHTML = '';
+
+            if (searchResults.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td colspan="6" style="text-align: center;">No results found.</td>`;
+                resultsBody.appendChild(row);
+                return;
+            }
+
+            searchResults.forEach(shoe => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${shoe.image ? `<img src="http://localhost:3000/images/${shoe.image}" class="image-placeholder"></img>` : `<div class="image-placeholder"></div>`}</td>
+                    <td>${shoe.id}</td>
+                    <td>${shoe.name}</td>
+                    <td>${formatPrice(shoe.price)}</td>
+                    <td>${shoe.stock} units</td>
+                    <td style="text-align: right;">
+
+                    </td> `
+                ;  
+                
+                const detailLink = document.createElement('a');
+                detailLink.textContent = 'Update';
+                detailLink.classList.add('btn-update-direct');
+
+                detailLink.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    const query = new URLSearchParams();
+                    query.set('id', shoe.id);
+                    // window.history.pushState({}, '', `/read/for/update?${query.toString()}`);
+
+                    fetch(`/read/for/update?${query.toString()}`)
+                    .then(response => {
+                    if (response.redirected) {                    
+                        window.location.href = response.url;
+                    } else {
+                        console.error('No redirect occurred.');
+                    }
+                    })
+                    .catch(error => {
+                        console.error('Error during fetch:', error);
+                    });
+                    
+                });
+
+                row.querySelector('td:last-child').appendChild(detailLink);
+                resultsBody.appendChild(row);
+                
+                
+            });
+            updateList = [...searchResults];
+            searchResults = [];
+            console.log("Update all: ", updateList);
+        }
+
+        function handleReset() {
+            document.getElementById('search-id').value = '';
+            document.getElementById('search-name').value = '';
+            searchResults = [];
+            document.getElementById('results-section').classList.add('hidden');
+        }
+
+        function handleUpdateAll() {
+            localStorage.setItem('updateAll', JSON.stringify(updateList));
+            const btnUpdateAll = document.getElementById('btn-update-all');
+            btnUpdateAll.href = `/update-detail?count=${updateList.length}`;
+            
+        }
+
+        function formatPrice(price) {
+            const formattedPrice = new Intl.NumberFormat('vi-VN').format(price);
+            return formattedPrice
+        }
+        function handleUpdateMany(){
+            event.preventDefault();
+            fetch('/update-price-many', {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    stock: document.getElementById('search-stock').value,
+                    price: document.getElementById('set-price-decrease').value,
+                    brand: document.getElementById('search-name').value.trim()
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Update successful:', data);
+                alert(data.message);
+            })
+            .catch(error => {
+                console.error('Error updating shoes:', error);
+            });
+        }
+    </script>
+</body>
+</html>
