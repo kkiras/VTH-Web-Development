@@ -77,7 +77,6 @@ app.get('/load-all-shoes', async (req, res) => {
   const condition = req.query.condition;
   try {
     if(condition) {
-      console.log('Condition:', condition);
       const shoes = await mongodbModule.findAllDocuments(condition);
       res.status(200).json(shoes);
       return;
@@ -85,7 +84,6 @@ app.get('/load-all-shoes', async (req, res) => {
     const shoes = await mongodbModule.findAllDocuments();
     res.status(200).json(shoes);
   } catch (error) {
-    console.error('Error fetching all shoes:', error);
     res.status(500).json({ message: 'Error fetching all shoes' });
   }
 });

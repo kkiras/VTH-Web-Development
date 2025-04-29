@@ -110,7 +110,7 @@
             .then(response => response.json())
             .then(shoes => {
                 searchResults.push(...shoes);
-                console.log("Search result: ", searchResults); // Keep includes
+                console.log("Search result: ", searchResults);
                 displayResults();
             })
             .catch(error => console.error('Error fetching shoes:', error));
@@ -155,7 +155,6 @@
                     event.preventDefault();
                     const query = new URLSearchParams();
                     query.set('id', shoe.id);
-                    // window.history.pushState({}, '', `/read/for/update?${query.toString()}`);
 
                     fetch(`/read/for/update?${query.toString()}`)
                     .then(response => {

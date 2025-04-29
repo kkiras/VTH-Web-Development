@@ -66,10 +66,7 @@ async function findAllDocuments(condition) {
       default:
         cursor = dbCollection.find({});
     }
-
     const documents = await cursor.toArray();
-    console.log("All documents:", documents.length);
-    console.log("All documents:", documents);
     return documents;
   } catch (err) {
     console.error("Error fetching all shoes:", err);
@@ -79,20 +76,13 @@ async function findAllDocuments(condition) {
 
 async function insertDocument(newShoes, newImages) {
   try {
-    if(newImages) {
-      Array.isArray(newShoes)
+    Array.isArray(newShoes)
       ? await dbCollection.insertMany(newShoes)
       : await dbCollection.insertOne(newShoes);
 
-      Array.isArray(newImages)
+    Array.isArray(newImages)
       ? await imageShoeCollectionDB.insertMany(newImages)
       : await imageShoeCollectionDB.insertOne(newImages);
-    }
-    else {
-      Array.isArray(newShoes)
-      ? await jsonImportCollectionDB.insertMany(newShoes)
-      : await jsonImportCollectionDB.insertOne(newShoes);
-    }
   } catch (err) {
     console.error("Error inserting document:", err);
     throw err;
@@ -192,20 +182,13 @@ async function updateByID(updateList, updateImageShoes) {
         { id: updatedShoe.id },
         { $set: updatedShoe }   
       );
-
     }
-  } catch (error) {
-    throw error
-  }
-  console.log("updateImageShoes", updateImageShoes);
-  try {
     for (const updatedImageShoe of updateImageShoes) {
-      const filter = { id: updatedImageShoe.id }; // Define the filter based on the unique identifier
-      const update = { $set: updatedImageShoe }; // Define the update operation
-  
+      const filter = { id: updatedImageShoe.id };
+      const update = { $set: updatedImageShoe };
       await imageShoeCollectionDB.updateOne(filter, update, { upsert: true });
     }
-  }catch (error) {
+  } catch (error) {
     throw error
   }
 }
@@ -219,8 +202,8 @@ async function findImageByImageName(name) {
 async function updateManyBySearchResult(priceMinus, brand, lessStock) {
   try{
     await dbCollection.updateMany(
-      { stock: { $lt: parseInt(lessStock) }, brand: { $regex: brand, $options: 'i' } },  // Compound filter
-      { $inc: { price: -parseInt(priceMinus) } }         // Decrease price by 1,000,000
+      { stock: { $lt: parseInt(lessStock) }, brand: { $regex: brand, $options: 'i' } },
+      { $inc: { price: -parseInt(priceMinus) } }         
     );
   } catch (error) {
     throw error;

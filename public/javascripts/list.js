@@ -83,7 +83,6 @@ function renderShoes() {
         const dropdown = card.querySelector('.dropdown');
         dropdown.appendChild(detailLink);
         
-
         shoesList.appendChild(card);
     }); 
 }

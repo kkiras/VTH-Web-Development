@@ -110,17 +110,6 @@
     </div>
 
     <script>
-        const sampleShoes = [
-            { id: "040", name: "Puma Deviate Nitro Elite 2", price: 6800000, displayPrice: "6.800.000VNĐ", stock: 18, brand: "Puma", size: ["36", "37", "38", "39", "40", "41", "42"] },
-            { id: "041", name: "Nike Air Zoom Pegasus 39", price: 3200000, displayPrice: "3.200.000VNĐ", stock: 24, brand: "Nike", size: ["38", "39", "40", "41", "42", "43"] },
-            { id: "042", name: "Adidas Ultraboost 22", price: 4500000, displayPrice: "4.500.000VNĐ", stock: 12, brand: "Adidas", size: ["39", "40", "41", "42", "43", "44"] },
-            { id: "043", name: "New Balance Fresh Foam X 1080v12", price: 4200000, displayPrice: "4.200.000VNĐ", stock: 8, brand: "New Balance", size: ["40", "41", "42", "43"] },
-            { id: "044", name: "Asics Gel-Nimbus 24", price: 3900000, displayPrice: "3.900.000VNĐ", stock: 15, brand: "Asics", size: ["39", "40", "41", "42", "43"] },
-            { id: "045", name: "Puma Velocity Nitro 2", price: 2900000, displayPrice: "2.900.000VNĐ", stock: 0, brand: "Puma", size: ["38", "39", "40", "41", "42"] },
-            { id: "046", name: "Nike ZoomX Vaporfly Next% 2", price: 6500000, displayPrice: "6.500.000VNĐ", stock: 5, brand: "Nike", size: ["40", "41", "42", "43", "44"] },
-            { id: "047", name: "Adidas Adizero Adios Pro 2", price: 5800000, displayPrice: "5.800.000VNĐ", stock: 3, brand: "Adidas", size: ["41", "42", "43", "44"] }
-        ];
-
         let searchQuery = "";
         let priceRange = [0, 7000000];
         let selectedBrands = [];
@@ -158,25 +147,13 @@
 
         function updateFilters() {
             selectedBrands = Array.from(document.querySelectorAll('#brand-filter input:checked')).map(input => input.parentElement.textContent.trim());
-            // handleSearch();
         }
 
         function clearFilters() {
             hasSearched = false;
             searchQuery = "";
-            // priceRange = [0, 7000000];
-            // selectedBrands = [];
-            // selectedSizes = [];
-            // filteredShoes = [];
-            // hasSearched = false;
 
             document.querySelector('.search-bar input').value = '';
-            // document.querySelectorAll('#brand-filter input').forEach(input => input.checked = false);
-            // document.querySelectorAll('.size-button').forEach(button => {
-            //     button.classList.remove('selected');
-            // });
-
-            // displayResults();
             window.history.pushState({}, '', '/search');
         }
 
@@ -198,7 +175,6 @@
             selectedBrands.forEach(brand => query.append('brand', brand));
             selectedSizes.forEach(size => query.append('size', size));
 
-            console.log("Combined query:", query.toString());
             window.history.pushState({}, '', `/searching?${query.toString()}`);
 
             fetch(`/searching?${query.toString()}`)
@@ -216,7 +192,6 @@
                 .catch(error => {
                     console.error("Error fetching shoes:", error);
                     filteredShoes = [];
-                    // displayResults();
                 });
         }
 
@@ -242,27 +217,14 @@
 
             resultsInfo.innerHTML = `
                 <span>${filteredShoes.length} results found</span>
-                ${selectedBrands.map(brand => `<span class="badge-filter">${brand} <span onclick="toggleBrand('${brand}')">✖</span></span>`).join('')}
-                ${selectedSizes.map(size => `<span class="badge-filter">Size ${size} <span onclick="toggleSize(document.querySelector(\`.size-button[data-size='${size}']\`), '${size}')">✖</span></span>`).join('')}
-                ${priceRange[0] > 0 || priceRange[1] < 7000000 ? `<span class="badge-filter">${formatPrice(priceRange[0])} - ${formatPrice(priceRange[1])} <span onclick="clearPrice()">✖</span></span>` : ''}
+
             `;
 
             if (filteredShoes.length === 0) {
                 alert("No shoes found", "No shoes found", "Try adjusting your search or filter criteria");
-                // resultsGrid.innerHTML = `
-                //     <div class="card" style="padding: 3rem; text-align: center;">
-                //         <div style="background: #f3f4f6; width: 4rem; height: 4rem; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
-                //             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                //         </div>
-                //         <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem;">No shoes found</h3>
-                //         <p style="color: #666; margin-bottom: 1.5rem;">Try adjusting your search or filter criteria</p>
-                //         <button class="btn-search" onclick="clearFilters()">Clear All Filters</button>
-                //     </div>
-                // `;
-                // return;
             }
 
-            filteredShoes.forEach(shoe => { //Danh sách đã được lọc và phân bổ sau khi server trả kq về client
+            filteredShoes.forEach(shoe => { 
                 const stockStatus = getStockStatus(shoe.stock);
                 shoesList.innerHTML += `
                     <div class="card">
@@ -298,12 +260,10 @@
         function toggleBrand(brand) {
             selectedBrands = selectedBrands.filter(b => b !== brand);
             document.querySelector(`#brand-filter input[value="${brand}"]`).checked = false;
-            // handleSearch();
         }
 
         function clearPrice() {
             priceRange = [0, 7000000];
-            // handleSearch();
         }
 
         // Initial render
