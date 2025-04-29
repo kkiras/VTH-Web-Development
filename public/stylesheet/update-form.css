@@ -309,15 +309,6 @@ h1{
     margin: 20px auto 44px;
 }
 
-#search-field {
-    display: flex;
-    gap: 14px;
-}
-
-#input-search-id {
-    flex: 1 1 0%;
-}
-
 #btn-search {
     flex: 0 0 auto;
     background-color: #17a34a;

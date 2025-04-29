@@ -3,110 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Delete Shoes</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        h2 {
-            font-size: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-        .search-section, #results-section {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
-        }
-        .search-form {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-        label {
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-        input {
-            padding: 0.5rem;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 1rem;
-        }
-        .button-group {
-            display: flex;
-            gap: 1rem;
-        }
-        button {
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .btn-search {
-            background: #16a34a;
-            color: white;
-        }
-        .btn-reset {
-            background: #fff;
-            border: 1px solid #ddd;
-        }
-        .btn-delete {
-            background: #dc2626;
-            color: white;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            padding: 0.75rem;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        th {
-            font-weight: 600;
-        }
-        .hidden {
-            display: none;
-        }
-        .results-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-        .image-placeholder {
-            width: 48px;
-            height: 48px;
-            background: #eee;
-            border-radius: 4px;
-        }
-        .hidden {
-            display: none;
-        }
-    </style>
+    <title>Delete</title>
+    <link rel="stylesheet" href="/stylesheet/delete.css">
 </head>
 <body>
     <div class="container">
+        <nav>
+            <div>
+                <a href="/" >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layout-grid h-5 w-5 text-green-600"><rect width="7" height="7" x="3" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="14" rx="1"></rect><rect width="7" height="7" x="3" y="14" rx="1"></rect></svg>
+                    <span>Shoe List</span>
+                </a>
+                <a href="/create" >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-plus h-5 w-5 text-gray-500"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path><path d="M12 8v8"></path></svg>
+                    <span>Add Shoe</span>
+                </a>
+                <a href="/update" >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-square-pen h-5 w-5 text-gray-500"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.375 2.625a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4Z"></path></svg>
+                    <span>Update Shoe</span>
+                </a>
+                <a href="/delete" class="active">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash2 h-5 w-5 text-gray-500"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" x2="10" y1="11" y2="17"></line><line x1="14" x2="14" y1="11" y2="17"></line></svg>
+                    <span>Delete Shoe</span>
+                </a>
+                <a href="/search">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+                    <span>Search</span>
+                </a>
+            </div>
+        </nav>
+
+
         <div class="search-section">
             <h2>Search Shoes to Delete</h2>
             <div class="search-form">
@@ -129,15 +56,15 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
             </div>
+            
         </div>
 
         <div class="hidden" id="results-section">
             <div class="results-header">
                 <h2>Search Results</h2>
-                <button class="btn-delete" onclick="handleDeleteAll()">
+                <a id="btn-update-all" class="btn-delete" onclick="handleUpdateAll()">
                     Delete All (<span id="results-count">0</span>)
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
-                </button>
+                </a>
             </div>
             <table>
                 <thead>
@@ -157,20 +84,21 @@
 
     <script>
         let searchResults = [];
+        let updateList = [];
 
         function handleSearch() {
-            // const searchId = document.getElementById('search-id').value.trim();
-            // console.log(searchId);
+            const searchID = document.getElementById('search-id').value.trim();
             const searchName = document.getElementById('search-name').value.trim();
             const query = new URLSearchParams();
+            if (searchID) query.set('id', searchID);
             if (searchName) query.set('name', searchName);
-            window.history.pushState({}, '', `/delete?${query.toString()}`);
+            // window.history.pushState({}, '', `/update?${query.toString()}`);
 
-            fetch(`/get-all-shoes?${query.toString()}`)
+            fetch(`/get-shoes?${query.toString()}`)
             .then(response => response.json())
             .then(shoes => {
                 searchResults.push(...shoes);
-                console.log("Search result: " + searchResults); // Keep includes
+                console.log("Search result: ", searchResults); // Keep includes
                 displayResults();
             })
             .catch(error => console.error('Error fetching shoes:', error));
@@ -182,11 +110,9 @@
             const resultsBody = document.getElementById('results-body');
             const resultsCount = document.getElementById('results-count');
 
-            // Always show the results section when a search is performed
             resultsSection.classList.remove('hidden');
             resultsCount.textContent = searchResults.length;
 
-            // Clear previous results
             resultsBody.innerHTML = '';
 
             if (searchResults.length === 0) {
@@ -199,20 +125,44 @@
             searchResults.forEach(shoe => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td><div class="image-placeholder"></div></td>
+                    <td>${shoe.image ? `<img src="http://localhost:3000/images/${shoe.image}" class="image-placeholder"></img>` : `<div class="image-placeholder"></div>`}</td>
                     <td>${shoe.id}</td>
                     <td>${shoe.name}</td>
-                    <td>${shoe.price}</td>
+                    <td>${formatPrice(shoe.price)}</td>
                     <td>${shoe.stock} units</td>
                     <td style="text-align: right;">
-                        <button class="btn-delete" onclick="handleDelete('${shoe.id}')">
-                            Delete
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
-                        </button>
-                    </td>
-                `;
+
+                    </td> `
+                ;  
+                
+                const detailLink = document.createElement('a');
+                detailLink.textContent = 'Delete';
+                detailLink.classList.add('btn-update-direct');
+
+                detailLink.addEventListener('click', (event) => {
+                    event.preventDefault();
+
+                    fetch(`/delete-item/${shoe.id}`, {
+                        method: 'DELETE'
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        alert(data.message);
+                    })
+                    .catch(error => {
+                        console.error('Error deleting shoe:', error);
+                    });
+                    
+                });
+
+                row.querySelector('td:last-child').appendChild(detailLink);
                 resultsBody.appendChild(row);
+                
+                
             });
+            updateList = [...searchResults];
+            searchResults = [];
+            console.log("Update all: ", updateList);
         }
 
         function handleReset() {
@@ -222,22 +172,11 @@
             document.getElementById('results-section').classList.add('hidden');
         }
 
-        function handleDelete(id) {
-            if (confirm(`Are you sure you want to delete the shoe with ID: ${id}? This action cannot be undone.`)) {
-                searchResults = searchResults.filter(shoe => shoe.id !== id);
-                displayResults();
-                alert('Shoe has been deleted successfully.');
-            }
+        function formatPrice(price) {
+            const formattedPrice = new Intl.NumberFormat('vi-VN').format(price);
+            return formattedPrice
         }
 
-        function handleDeleteAll() {
-            if (searchResults.length === 0) return;
-            if (confirm(`Are you sure you want to delete all ${searchResults.length} shoes in the search results? This action cannot be undone.`)) {
-                searchResults = [];
-                displayResults();
-                alert('All shoes have been deleted successfully.');
-            }
-        }
     </script>
 </body>
 </html>

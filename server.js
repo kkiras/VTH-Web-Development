@@ -47,11 +47,11 @@ app.get('/search', (req, res) => {
 });
 
 app.get('/update', (req, res) => {
-  res.sendFile(path.join(__dirname, './public/pages/update-2.html'));
+  res.sendFile(path.join(__dirname, './public/pages/update.html'));
 });
 
 app.get('/update-detail', (req, res) => {
-  res.sendFile(path.join(__dirname, './public/pages/update-form-2.html'));
+  res.sendFile(path.join(__dirname, './public/pages/update-form.html'));
 });
 
 app.get('/delete', (req, res) => {
@@ -61,17 +61,14 @@ app.get('/delete', (req, res) => {
 app.get('/read/for/update', async (req, res) => {
   const id = req.query.id;
   console.log('ID for update:', id);
-  const query =  { id: { $regex: id, $options: 'i' } };
   try {
-    editShoe = await mongodbModule.findDocumentById(query);
-    console.log('Shoe for update:', editShoe);
-    const queryParams = queryString.stringify(editShoe);
+    editShoe = await mongodbModule.findDocumentsByIdOrName(  { id: id, name: '' } );
+    const queryParams = queryString.stringify(editShoe[0]);
     res.redirect(`/update-detail?${queryParams}`);
   } catch (error) {
     console.error('Error fetching shoe for update:', error);
     res.status(500).json({ message: 'Error fetching shoe for update' });
   }
-  
 });
 
 // --- Data APIs ---
@@ -146,13 +143,6 @@ app.post('/api/json-file', async (req, res) => {
   addNewShoes(jsonData, null, res);
 });
 
-// Load image by name
-// app.get('/images/:imageName', async (req, res) => {
-//   const imageName = req.params.imageName;
-//   await loadShoes(imageName, res);
-// });
-
-// Search shoes
 app.get('/searching', async (req, res) => {
   const nameOrBrand = req.query.q;
   const { priceMin, priceMax, brand, size } = req.query;
@@ -164,24 +154,15 @@ app.get('/searching', async (req, res) => {
     size: size || null
   };
   console.log('Search query:', searchQuery);
-  if (searchQuery.nameOrBrand || searchQuery.brand || searchQuery.size) {
-    result = await mongodbModule.findDocument(searchQuery);
-  } else {
-    result = await mongodbModule.findDocument(); // or return empty result []
-  }
+  result = await mongodbModule.findDocument(searchQuery);
   res.status(200).json(result);
  
 });
 
-app.get('/get-all-shoes', async (req, res) => {
-  const name = req.query.name;
-  const shoes = await mongodbModule.findDocumentsByName(name);
-  res.status(200).json(shoes);
-});
-
 // Get shoes by id or name
-app.get('/api/shoes/all', async (req, res) => {
-  const { id, name } = req.query;
+app.get('/get-shoes', async (req, res) => {
+  const id =  req.query.id ? req.query.id : '';
+  const name = req.query.name ? req.query.name : '';
   try {
     const results = await mongodbModule.findDocumentsByIdOrName({ id, name });
     res.status(200).json(results);
@@ -191,6 +172,17 @@ app.get('/api/shoes/all', async (req, res) => {
   }
 });
 
+app.delete('/delete-item/:id', async (req, res) => {
+  const id = req.params.id;
+  console.log('ID for delete:', id);
+  try {
+    const result = await mongodbModule.deleteShoeByID(id);
+    res.status(200).json({ message: 'Shoe deleted successfully' });
+  }
+  catch (error) {
+    res.status(500).json({ message: 'Error deleting shoe' });
+  }
+})
 
 // Update shoe by ID
 app.put('/api/shoes/:id', upload.single('image'), async (req, res) => {
@@ -249,11 +241,8 @@ app.post('/update-add', upload.single('image'), async (req, res) => {
 app.put('/update-one', upload.single('image'), async (req, res) => {
   const editShoe = req.body;
   if (!req.file) {
-
-    // return res.status(400).json({ message: 'No file uploaded' });
     updateOne(editShoe, null, res);
   }
-  // console.log('Edit shoe DB:', editShoe);
   const updateImageShoe = {}
   if(req.file) {
     editShoe.image = req.file.originalname;
@@ -282,7 +271,6 @@ app.put('/update-price-many', async (req, res) => {
 
 app.get('/images/:name', async (req, res) => {
   const name = req.params.name;
-  console.log('Image name:', name);
   try {
     const image = await mongodbModule.findImageByImageName(name);
     if (image) {
@@ -302,34 +290,6 @@ app.get('/images/:name', async (req, res) => {
   }
 })
 
-
-// --- Helper Functions ---
-
-// async function loadShoes(imageName, res) {
-//   try {
-//     const imageDocument = await mongodbModule.findDocumentByName(imageName);
-//     if (imageDocument && imageDocument.imageData) {
-//       const imageData = imageDocument.imageData.buffer;
-//       const mimeType = imageDocument.mimeType;
-
-//       res.writeHead(200, {
-//         'Content-Type': mimeType,
-//         'Content-Length': imageData.length
-//       });
-//       res.end(Buffer.from(imageData, 'binary'));
-//     } else {
-//       res.status(404).send('Image not found');
-//     }
-//   } catch (err) {
-//     console.error('Failed to load image:', err);
-//     res.status(500).send('Error fetching image');
-//   }
-// }
-
-async function loadShoes(imageName, res) {
-
-}
-
 async function addNewShoes(shoeList, imgList, res) {
   try {
     await mongodbModule.insertDocument(shoeList, imgList);
@@ -343,7 +303,7 @@ async function addNewShoes(shoeList, imgList, res) {
 
 async function updateShoes(shoeList, res) {
   try {
-    await mongodbModule.updateManyByID(shoeList, updateImageShoes);
+    await mongodbModule.updateByID(shoeList, updateImageShoes);
     newShoesAdded = [];
     res.status(200).json({ message: 'Shoes updated in database successfully' });
   } catch (error) {
@@ -354,7 +314,7 @@ async function updateShoes(shoeList, res) {
 
 async function updateOne(shoe, image,  res){
   try {
-    await mongodbModule.updateManyByID(shoe, image);
+    await mongodbModule.updateByID(shoe, image);
     res.status(200).json({ message: 'Shoes updated in database successfully' });
   } catch (error) {
     console.error('Error updating shoes:', error);

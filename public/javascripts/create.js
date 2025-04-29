@@ -2,7 +2,7 @@ function previewImage(event) {
     const file = event.target.files[0];
 
     if (file) {
-        alert(file.originalname + " " + file.mimetype + " " + file.buffer);
+        // alert(file.originalname + " " + file.mimetype + " " + file.buffer);
         const reader = new FileReader();
         reader.onload = function(e) {
             const previewImage = document.getElementById('previewImage');
@@ -54,11 +54,9 @@ function updatePreview() {
     const color = document.getElementById('color').value;
     const stock = document.getElementById('stock').value;
 
-    // Update default preview
     document.getElementById('previewName').textContent = name;
     document.getElementById('previewPrice').textContent = price;
 
-    // Update hover preview
     document.getElementById('previewNameHover').textContent = name;
     document.getElementById('previewPriceHover').textContent = price;
     document.getElementById('previewDescriptionHover').textContent = description;
@@ -66,14 +64,12 @@ function updatePreview() {
     document.getElementById('previewColorHover').textContent = color;
     document.getElementById('previewStockHover').textContent = `${stock} units`;
 
-    // Update available sizes
     const sizeCheckboxes = document.querySelectorAll('.sizes input[type="checkbox"]:checked');
     const sizes = Array.from(sizeCheckboxes).map(checkbox => checkbox.value);
     const previewSizes = document.getElementById('previewSizesHover');
     previewSizes.innerHTML = sizes.map(size => `<span>${size}</span>`).join('');
 }
 
-// Make the image upload area clickable
 const imageUploadArea = document.getElementById('imageUploadArea');
 const imageInput = document.getElementById('image');
 
@@ -81,7 +77,6 @@ imageUploadArea.addEventListener('click', () => {
     imageInput.click();
 });
 
-// Add drag-and-drop functionality
 imageUploadArea.addEventListener('dragover', (e) => {
     e.preventDefault();
     imageUploadArea.style.backgroundColor = '#e0e0e0';
@@ -115,5 +110,4 @@ jsonFieldToggle.addEventListener('click', () => {
     jsonContent.classList.toggle('show');
 });
 
-// Initial update to populate preview
 updatePreview();

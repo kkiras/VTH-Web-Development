@@ -22,11 +22,11 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-square-pen h-5 w-5 text-gray-500"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.375 2.625a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4Z"></path></svg>
                 <span>Update Shoe</span>
             </a>
-            <a href="/delete-shoe">
+            <a href="/delete">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash2 h-5 w-5 text-gray-500"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" x2="10" y1="11" y2="17"></line><line x1="14" x2="14" y1="11" y2="17"></line></svg>
                 <span>Delete Shoe</span>
             </a>
-            <a href="/search" class="active">
+            <a href="/search">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
                 <span>Search</span>
             </a>
@@ -189,6 +189,15 @@
             alert(data.message);
         })
 
+        fetch('/highest-id')
+        .then(response => response.json())
+        .then(data => {
+            highestID = data.highestId;
+            console.log(highestID);
+            currentShoeID = increaseID(highestID);
+            generateId(); 
+        });
+
         function abbreviateBrand(brand) {
             const brandUpperCase = brand.trim().toUpperCase();
 
@@ -204,12 +213,12 @@
                 default:
                 return ""; 
             }
-            }
+        }
 
-            function abbreviateType(type) {
+        function abbreviateType(type) {
             return type
-                .replace(/[^a-zA-Z]/g, '') //Loai bo ky tu dac biet va so trong type
-                .substring(0, 3) // Lay 3 ky tu dau tien
+                .replace(/[^a-zA-Z]/g, '')
+                .substring(0, 3)
                 .toUpperCase();
             }
             function abbreviateGender(gender) {
@@ -227,16 +236,7 @@
             }
         }
         
-        fetch('/highest-id')
-        .then(response => response.json())
-        .then(data => {
-            highestID = data.highestId;
-            console.log(highestID);
-            const incrementedNumber = parseInt(highestID, 10) + 1;
-            const newNumericPart = incrementedNumber.toString().padStart(3, '0');
-            currentShoeID = newNumericPart;
-            generateId(); 
-        });
+        
         function addNewShoe(){
             event.preventDefault();
             const form = document.getElementById('shoeForm');
@@ -257,6 +257,8 @@
             .then(data => {
                 alert(data.message);
             });
+
+            currentShoeID = increaseID(currentShoeID);
             resetForm();
         }
 
@@ -268,12 +270,12 @@
                 alert(data.message)
             });
             resetForm();
-   
         }
 
         function resetForm(){
             document.getElementById('shoeForm').reset();
             document.getElementById('previewImage').innerText = 'No Image';
+            generateId();
             updatePreview();
         }
 
@@ -306,7 +308,12 @@
             }          
 
         }
-        
+        function increaseID(id){
+            const incrementedNumber = parseInt(id, 10) + 1;
+            const newNumericPart = incrementedNumber.toString().padStart(3, '0');
+            return newNumericPart;
+        }
+
         function generateId() {
             const brand = document.getElementById('brand').value;
             const type = document.getElementById('type').value;
