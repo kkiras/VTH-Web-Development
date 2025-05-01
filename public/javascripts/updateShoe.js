@@ -126,5 +126,15 @@ imageUploadArea.addEventListener('drop', (e) => {
     }
 });
 
+function displayButton(isMany) {
+    if(isMany){
+        document.getElementById('btn-update-shoe').classList.add('btn-hidden');
+    }
+    else{
+        document.getElementById('btn-add-shoe').classList.add('btn-hidden');
+        document.getElementById('btn-submit-shoe').classList.add('btn-hidden');
+    }
+}
+
 // Initial update to populate preview
 updatePreview();

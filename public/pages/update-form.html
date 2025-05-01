@@ -173,9 +173,8 @@
             const id = urlParams.get('id');
 
             if (count) {
-                // console.log("Selected shoes:", updateAll[0], updateAll[1]);
-                // console.log("Selected shoes name:", updateAll[0].name);
                 currentShoe = updateAll[0];
+                displayButton(true)
                 populateForm(currentShoe);
                 return;
             }
@@ -208,7 +207,7 @@
 
                 }
 
-                console.log("Edit Shoe:", editShoe);
+                displayButton(false)
                 populateForm(editShoe);
                 return;
             }

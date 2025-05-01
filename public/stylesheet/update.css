@@ -62,6 +62,18 @@ button {
     background: #fff;
     border: 1px solid #ddd;
 }
+#btn-update-all{
+    text-decoration: none;
+    color: #16a34a;
+    text-decoration: none;
+    padding: 4px;
+    font-size: 14px;
+}
+
+.btn-update-all:hover {
+    text-shadow: 0.25px 0 #16a34a, -0.25px 0 #16a34a;
+}
+
 .btn-update-direct {
     color: #16a34a;
     text-decoration: none;
